@@ -1,6 +1,6 @@
 ---
 id: SPEC-001
-status: IN_PROGRESS
+status: IMPLEMENTED
 feature: cliente-service
 created: 2026-04-28
 updated: 2026-04-28
