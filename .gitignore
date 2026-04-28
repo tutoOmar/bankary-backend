@@ -1,0 +1,78 @@
+# .gitignore for Java (Gradle) mono-repo
+
+# Gradle
+.gradle/
+**/.gradle/
+**/build/
+**/out/
+
+# Do not ignore the Gradle wrapper jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+hs_err_pid*
+
+# Compiled class files
+*.class
+
+# JAR/WAR/EAR
+*.jar
+*.war
+*.ear
+
+# Temporary files
+tmp/
+temp/
+
+# Test results
+/test-results/
+**/test-results/
+
+# Docker / env
+.env
+.env.*
+docker-compose.override.yml
+
+# Local properties
+local.properties
+
+# Ignore IDE/editor swap files
+*~
+*.swp
+
+# Ignore generated gradle caches in subprojects (including cliente-service/.gradle)
+**/.gradle/
+
+# Ignore build directories everywhere
+**/build/
+
+# Optional: ignore generated native images / build artifacts
+*/build/
+
+# Keep SQL seeds and scripts (do NOT ignore .sql files in repo root)
+# BaseDatos.sql
+# seed_clientes.sql
+# seed_cuentas.sql
+
+# End of .gitignore
