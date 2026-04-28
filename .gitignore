@@ -1,5 +1,5 @@
 # .gitignore for Java (Gradle) mono-repo
-
+.agents/
 # Gradle
 .gradle/
 **/.gradle/

@@ -1,10 +1,10 @@
 package com.tupackage.clienteservice.application.usecase;
 
+import com.tupackage.clienteservice.domain.event.ClienteEvent;
 import com.tupackage.clienteservice.domain.model.Cliente;
 import com.tupackage.clienteservice.domain.port.in.ClienteUseCase;
 import com.tupackage.clienteservice.domain.port.out.ClienteEventPublisher;
 import com.tupackage.clienteservice.domain.port.out.ClienteRepository;
-import com.tupackage.clienteservice.infrastructure.adapter.out.messaging.ClienteEventMessage;
 import com.tupackage.clienteservice.exception.ClienteNotFoundException;
 import com.tupackage.clienteservice.exception.DuplicateIdentificacionException;
 import com.tupackage.clienteservice.exception.ValidationException;
@@ -21,6 +21,7 @@ import java.util.UUID;
 
 @Service
 public class ClienteUseCaseImpl implements ClienteUseCase {
+
     private static final Logger log = LoggerFactory.getLogger(ClienteUseCaseImpl.class);
 
     private final ClienteRepository clienteRepository;
@@ -46,15 +47,7 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
         }
 
         Cliente saved = clienteRepository.save(cliente);
-
-        // Publish event fire-and-forget
-        ClienteEventMessage event = new ClienteEventMessage(saved.getId(), saved.getNombre(), Instant.now(), "CLIENTE_CREATED");
-        try {
-            eventPublisher.publish(event);
-        } catch (Exception e) {
-            log.error("Failed to publish cliente.created event for id {}", saved.getId(), e);
-        }
-
+        publishEvent(saved, ClienteEvent.Type.CLIENTE_CREATED);
         return saved;
     }
 
@@ -68,8 +61,10 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
             throw new ValidationException("Edad debe ser >= 0");
         }
 
-        Cliente existing = clienteRepository.findById(id).orElseThrow(() -> new ClienteNotFoundException(id));
+        Cliente existing = clienteRepository.findById(id)
+                .orElseThrow(() -> new ClienteNotFoundException(id));
 
+        // Verificar duplicado de identificacion solo si cambió a otra diferente
         Optional<Cliente> byIdent = clienteRepository.findByIdentificacion(cliente.getIdentificacion());
         if (byIdent.isPresent() && !byIdent.get().getId().equals(id) && byIdent.get().isEstado()) {
             throw new DuplicateIdentificacionException("Identificacion ya existe para otro cliente activo");
@@ -83,20 +78,14 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
         }
 
         Cliente saved = clienteRepository.save(existing);
-
-        ClienteEventMessage event = new ClienteEventMessage(saved.getId(), saved.getNombre(), Instant.now(), "CLIENTE_UPDATED");
-        try {
-            eventPublisher.publish(event);
-        } catch (Exception e) {
-            log.error("Failed to publish cliente.updated event for id {}", saved.getId(), e);
-        }
-
+        publishEvent(saved, ClienteEvent.Type.CLIENTE_UPDATED);
         return saved;
     }
 
     @Override
     public Cliente findById(UUID id) {
-        return clienteRepository.findById(id).orElseThrow(() -> new ClienteNotFoundException(id));
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ClienteNotFoundException(id));
     }
 
     @Override
@@ -107,19 +96,15 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
     @Override
     @Transactional
     public Cliente deleteLogical(UUID id) {
-        Cliente existing = clienteRepository.findById(id).orElseThrow(() -> new ClienteNotFoundException(id));
+        Cliente existing = clienteRepository.findById(id)
+                .orElseThrow(() -> new ClienteNotFoundException(id));
         existing.setEstado(false);
         Cliente saved = clienteRepository.save(existing);
-
-        ClienteEventMessage event = new ClienteEventMessage(saved.getId(), saved.getNombre(), Instant.now(), "CLIENTE_DELETED");
-        try {
-            eventPublisher.publish(event);
-        } catch (Exception e) {
-            log.error("Failed to publish cliente.deleted event for id {}", saved.getId(), e);
-        }
-
+        publishEvent(saved, ClienteEvent.Type.CLIENTE_DELETED);
         return saved;
     }
+
+    // ── Private helpers ──────────────────────────────────────────────────────
 
     private void validateForCreate(Cliente cliente) {
         if (cliente.getNombre() == null || cliente.getNombre().trim().isEmpty()) {
@@ -135,6 +120,19 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
         Optional<Cliente> existing = clienteRepository.findByIdentificacion(cliente.getIdentificacion());
         if (existing.isPresent() && existing.get().isEstado()) {
             throw new DuplicateIdentificacionException("Identificacion ya existe para un cliente activo");
+        }
+    }
+
+    /**
+     * Fire-and-forget: publicar evento de dominio.
+     * Un fallo en mensajería no debe abortar la transacción de negocio.
+     */
+    private void publishEvent(Cliente cliente, ClienteEvent.Type type) {
+        try {
+            eventPublisher.publish(new ClienteEvent(
+                    cliente.getId(), cliente.getNombre(), Instant.now(), type));
+        } catch (Exception e) {
+            log.error("Failed to publish {} event for clienteId={}", type, cliente.getId(), e);
         }
     }
 }

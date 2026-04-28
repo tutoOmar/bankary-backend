@@ -9,7 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -62,6 +62,11 @@ public class ClienteServiceIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @org.junit.jupiter.api.BeforeEach
+    void cleanDb() {
+        clienteJpaRepository.deleteAll();
+    }
 
     @Test
     public void postCliente_persistsAndPublishes() throws Exception {

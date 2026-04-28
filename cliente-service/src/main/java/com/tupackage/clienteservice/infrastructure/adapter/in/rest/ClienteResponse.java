@@ -1,10 +1,18 @@
 package com.tupackage.clienteservice.infrastructure.adapter.in.rest;
 
 import com.tupackage.clienteservice.domain.model.Cliente;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * DTO de salida. Nunca expone passwordHash.
+ */
+@Getter
+@NoArgsConstructor
 public class ClienteResponse {
+
     private UUID id;
     private String nombre;
     private Integer edad;
@@ -20,10 +28,4 @@ public class ClienteResponse {
         r.estado = c.isEstado();
         return r;
     }
-
-    public UUID getId() { return id; }
-    public String getNombre() { return nombre; }
-    public Integer getEdad() { return edad; }
-    public String getIdentificacion() { return identificacion; }
-    public boolean isEstado() { return estado; }
 }
