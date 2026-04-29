@@ -1,0 +1,40 @@
+.agents/
+**/build/
+**/bin/
+**/out/
+**/target/
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.project
+.classpath
+.settings/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+logs/
+hs_err_pid*
+*.class
+*.jar
+*.war
+*.ear
+tmp/
+temp/
+/test-results/
+**/test-results/
+.env
+.env.*
+docker-compose.override.yml
+local.properties
+*~
+*.swp
+**/.gradle/
+
+# Keep SQL seeds and scripts (do NOT ignore .sql files in repo root)
+# BaseDatos.sql
+# seed_clientes.sql
+# seed_cuentas.sql              
