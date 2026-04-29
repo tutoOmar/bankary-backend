@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "cliente_snapshots")
+@Table(name = "cliente_snapshot")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

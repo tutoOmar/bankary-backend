@@ -1,4 +1,0 @@
--- BaseDatos.sql
--- Archivo de esquema inicial para cliente_db.
--- Si spring.jpa.hibernate.ddl-auto está en update, Spring creará el esquema automáticamente.
--- Puede usarse para definiciones manuales de tablas si es necesario.
