@@ -1,14 +1,15 @@
 .agents/
 **/build/
 **/bin/
-**/out/
+# Ignorar solo carpeta out/ en la raíz o carpetas de build específicas si fuera necesario
+/out/
 **/target/
 !gradle/wrapper/gradle-wrapper.jar
 .idea/
 *.iml
 *.iws
 *.ipr
-out/
+/out/
 .project
 .classpath
 .settings/

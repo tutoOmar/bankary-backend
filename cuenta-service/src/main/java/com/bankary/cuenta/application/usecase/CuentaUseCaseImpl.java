@@ -5,6 +5,7 @@ import com.bankary.cuenta.application.exception.ResourceNotFoundException;
 import com.bankary.cuenta.domain.model.Cuenta;
 import com.bankary.cuenta.domain.port.in.CuentaUseCase;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
+import com.bankary.cuenta.domain.port.out.ClienteSnapshotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class CuentaUseCaseImpl implements CuentaUseCase {
 
     private final CuentaRepository cuentaRepository;
+    private final ClienteSnapshotRepository clienteSnapshotRepository;
 
     @Override
     public Cuenta create(Cuenta cuenta) {
@@ -23,7 +25,10 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
                 .ifPresent(c -> {
                     throw new ConflictException("Ya existe una cuenta con el numero " + cuenta.getNumeroCuenta());
                 });
-        
+
+        clienteSnapshotRepository.findById(cuenta.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("El cliente con ID " + cuenta.getClienteId() + " no existe o aun no ha sido sincronizado"));
+
         if (cuenta.getId() == null) {
             cuenta.setId(UUID.randomUUID());
         }
