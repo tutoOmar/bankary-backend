@@ -1,6 +1,6 @@
 ---
 id: SPEC-005
-status: IN_PROGRESS
+status: IMPLEMENTED
 feature: reglas-de-negocio
 created: 2026-04-29
 updated: 2026-04-29
