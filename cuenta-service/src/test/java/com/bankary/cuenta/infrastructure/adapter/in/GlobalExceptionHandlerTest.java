@@ -4,6 +4,7 @@ import com.bankary.cuenta.application.exception.SaldoInsuficienteException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,7 +16,8 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleSaldoInsuficiente_ReturnsBadRequest() {
         SaldoInsuficienteException ex = new SaldoInsuficienteException("Saldo no disponible");
-        ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = handler.handleSaldoInsuficiente(ex);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = handler.handleSaldoInsuficiente(ex, request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -26,10 +28,11 @@ class GlobalExceptionHandlerTest {
     @Test
     void handleGenericException_ReturnsInternalError() {
         Exception ex = new Exception("Critical failure");
-        ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = handler.handleGenericException(ex);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        ResponseEntity<GlobalExceptionHandler.ErrorResponse> response = handler.handleGenericException(ex, request);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Ocurrió un error inesperado: Critical failure", response.getBody().getMessage());
+        assertEquals("Ha ocurrido un error inesperado en el servidor", response.getBody().getMessage());
     }
 }

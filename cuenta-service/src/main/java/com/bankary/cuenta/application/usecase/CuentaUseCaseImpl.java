@@ -8,11 +8,13 @@ import com.bankary.cuenta.domain.port.in.CuentaUseCase;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import com.bankary.cuenta.domain.port.out.ClienteSnapshotRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CuentaUseCaseImpl implements CuentaUseCase {
@@ -22,53 +24,84 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
 
     @Override
     public Cuenta create(Cuenta cuenta) {
+        log.info("Iniciando creación de cuenta | numeroCuenta={} | clienteId={} | tipo={}", 
+                cuenta.getNumeroCuenta(), cuenta.getClienteId(), cuenta.getTipoCuenta());
+        
         cuentaRepository.findByNumeroCuenta(cuenta.getNumeroCuenta())
                 .ifPresent(c -> {
+                    log.error("Cuenta duplicada | numeroCuenta={}", cuenta.getNumeroCuenta());
                     throw new ConflictException("Ya existe una cuenta con el numero " + cuenta.getNumeroCuenta());
                 });
 
         clienteSnapshotRepository.findById(cuenta.getClienteId())
-                .orElseThrow(() -> new ResourceNotFoundException("El cliente con ID " + cuenta.getClienteId() + " no existe o aun no ha sido sincronizado"));
+                .orElseThrow(() -> {
+                    log.error("Cliente no encontrado en snapshot | clienteId={}", cuenta.getClienteId());
+                    return new ResourceNotFoundException("El cliente con ID " + cuenta.getClienteId() + " no existe o aun no ha sido sincronizado");
+                });
 
         // Validar límite de cuentas por tipo
         List<Cuenta> cuentasActivas = cuentaRepository.findByClienteIdAndEstadoTrue(cuenta.getClienteId());
-        CuentaLimiteValidator.validarLimitePorTipo(cuenta.getTipoCuenta(), cuentasActivas);
+        try {
+            CuentaLimiteValidator.validarLimitePorTipo(cuenta.getTipoCuenta(), cuentasActivas);
+        } catch (Exception e) {
+            log.error("Límite de cuentas excedido | clienteId={} | tipo={} | error={}", 
+                    cuenta.getClienteId(), cuenta.getTipoCuenta(), e.getMessage());
+            throw e;
+        }
 
         if (cuenta.getId() == null) {
             cuenta.setId(UUID.randomUUID());
         }
         cuenta.setSaldoDisponible(cuenta.getSaldoInicial());
         cuenta.setEstado(true);
-        return cuentaRepository.save(cuenta);
+        
+        Cuenta saved = cuentaRepository.save(cuenta);
+        log.info("Cuenta creada exitosamente | id={} | numeroCuenta={}", saved.getId(), saved.getNumeroCuenta());
+        return saved;
     }
 
     @Override
     public Cuenta update(String numeroCuenta, Cuenta cuenta) {
+        log.info("Actualizando cuenta | numeroCuenta={}", numeroCuenta);
         Cuenta existing = cuentaRepository.findByNumeroCuenta(numeroCuenta)
-                .orElseThrow(() -> new ResourceNotFoundException("Cuenta no encontrada"));
+                .orElseThrow(() -> {
+                    log.warn("Cuenta no encontrada para actualización | numeroCuenta={}", numeroCuenta);
+                    return new ResourceNotFoundException("Cuenta no encontrada");
+                });
         
         existing.setTipoCuenta(cuenta.getTipoCuenta());
         existing.setEstado(cuenta.isEstado());
-        // El saldo no se actualiza manualmente por regla de negocio (solo vía movimientos)
         
-        return cuentaRepository.save(existing);
+        Cuenta updated = cuentaRepository.save(existing);
+        log.info("Cuenta actualizada exitosamente | id={}", updated.getId());
+        return updated;
     }
 
     @Override
     public void delete(String numeroCuenta) {
+        log.info("Eliminando cuenta | numeroCuenta={}", numeroCuenta);
         cuentaRepository.findByNumeroCuenta(numeroCuenta)
-                .orElseThrow(() -> new ResourceNotFoundException("Cuenta no encontrada"));
+                .orElseThrow(() -> {
+                    log.warn("Cuenta no encontrada para eliminación | numeroCuenta={}", numeroCuenta);
+                    return new ResourceNotFoundException("Cuenta no encontrada");
+                });
         cuentaRepository.deleteByNumeroCuenta(numeroCuenta);
+        log.info("Cuenta eliminada exitosamente | numeroCuenta={}", numeroCuenta);
     }
 
     @Override
     public Cuenta getByNumeroCuenta(String numeroCuenta) {
+        log.debug("Consultando cuenta | numeroCuenta={}", numeroCuenta);
         return cuentaRepository.findByNumeroCuenta(numeroCuenta)
-                .orElseThrow(() -> new ResourceNotFoundException("Cuenta no encontrada"));
+                .orElseThrow(() -> {
+                    log.warn("Consulta fallida: cuenta no encontrada | numeroCuenta={}", numeroCuenta);
+                    return new ResourceNotFoundException("Cuenta no encontrada");
+                });
     }
 
     @Override
     public List<Cuenta> list() {
+        log.debug("Listando todas las cuentas");
         return cuentaRepository.findAll();
     }
 }
