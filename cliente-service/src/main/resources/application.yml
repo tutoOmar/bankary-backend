@@ -22,3 +22,8 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.bankary.cliente: ${LOG_LEVEL_APP:INFO}

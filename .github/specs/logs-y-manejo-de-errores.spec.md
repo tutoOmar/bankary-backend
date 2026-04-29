@@ -1,6 +1,6 @@
 ---
 id: SPEC-007
-status: DRAF
+status: IN_PROGRESS
 feature: logs-y-manejo-de-errores
 created: 2026-04-29
 updated: 2026-04-29
@@ -252,45 +252,45 @@ Formato resultante en consola:
 ### cliente-service
 
 #### @RestControllerAdvice
-- [ ] Auditar handlers existentes e identificar cuáles no tienen `log.error()`
-- [ ] Agregar log ERROR en handler de `DocumentoInvalidoException` con método, URI y motivo
-- [ ] Agregar log ERROR en handler de `ClienteNotFoundException` (o equivalente) con id buscado
-- [ ] Agregar o corregir handler genérico para `Exception.class` con log ERROR + stack trace
+- [x] Auditar handlers existentes e identificar cuáles no tienen `log.error()`
+- [x] Agregar log ERROR en handler de `DocumentoInvalidoException` con método, URI y motivo
+- [x] Agregar log ERROR en handler de `ClienteNotFoundException` (o equivalente) con id buscado
+- [x] Agregar o corregir handler genérico para `Exception.class` con log ERROR + stack trace
       y respuesta 500 sin detalles internos
-- [ ] Agregar handler para `MethodArgumentNotValidException` con log WARN si no existe
+- [x] Agregar handler para `MethodArgumentNotValidException` con log WARN si no existe
 
 #### ClienteUseCaseImpl
-- [ ] Agregar `@Slf4j` (o declaración manual del logger) a la clase
-- [ ] Log INFO al inicio de `crearCliente()` con tipoDocumento y numeroDocumento
-- [ ] Log ERROR antes de lanzar `DocumentoInvalidoException` con motivo
-- [ ] Log ERROR antes de lanzar excepción de duplicado
-- [ ] Log INFO tras persistir el cliente con el id generado
-- [ ] Log WARN en `buscarClientePorId()` cuando el cliente no existe
+- [x] Agregar `@Slf4j` (o declaración manual del logger) a la clase
+- [x] Log INFO al inicio de `crearCliente()` con tipoDocumento y numeroDocumento
+- [x] Log ERROR antes de lanzar `DocumentoInvalidoException` con motivo
+- [x] Log ERROR antes de lanzar excepción de duplicado
+- [x] Log INFO tras persistir el cliente con el id generado
+- [x] Log WARN en `buscarClientePorId()` cuando el cliente no existe
 
 #### Configuración
-- [ ] Agregar `logging.level.root` y `logging.level.com.tuempresa` a `application.properties`
+- [x] Agregar `logging.level.root` y `logging.level.com.tuempresa` a `application.properties`
       usando variables de entorno con default INFO
-- [ ] Agregar `LOG_LEVEL` y `LOG_LEVEL_APP` a `.env.example`
+- [x] Agregar `LOG_LEVEL` y `LOG_LEVEL_APP` a `.env.example`
 
 ### cuenta-service
 
 #### @RestControllerAdvice
-- [ ] Auditar handlers existentes e identificar cuáles no tienen `log.error()`
-- [ ] Agregar log ERROR en handler de `CuentaDuplicadaException` con clienteId y tipoCuenta
-- [ ] Agregar log ERROR en handler de cuenta/cliente no encontrado con id buscado
-- [ ] Agregar o corregir handler genérico para `Exception.class` con log ERROR + stack trace
+- [x] Auditar handlers existentes e identificar cuáles no tienen `log.error()`
+- [x] Agregar log ERROR en handler de `CuentaDuplicadaException` con clienteId y tipoCuenta
+- [x] Agregar log ERROR en handler de cuenta/cliente no encontrado con id buscado
+- [x] Agregar o corregir handler genérico para `Exception.class` con log ERROR + stack trace
       y respuesta 500 sin detalles internos
-- [ ] Agregar handler para `MethodArgumentNotValidException` con log WARN si no existe
+- [x] Agregar handler para `MethodArgumentNotValidException` con log WARN si no existe
 
 #### CuentaUseCaseImpl
-- [ ] Agregar `@Slf4j` (o declaración manual del logger) a la clase
-- [ ] Log INFO al inicio de `crearCuenta()` con clienteId y tipoCuenta
-- [ ] Log ERROR antes de lanzar `CuentaDuplicadaException` con clienteId y tipoCuenta
-- [ ] Log INFO tras persistir la cuenta con id generado
-- [ ] Log INFO al registrar un movimiento con cuentaId, tipo y monto
-- [ ] Log WARN cuando una cuenta consultada no existe
+- [x] Agregar `@Slf4j` (o declaración manual del logger) a la clase
+- [x] Log INFO al inicio de `crearCuenta()` con clienteId y tipoCuenta
+- [x] Log ERROR antes de lanzar `CuentaDuplicadaException` con clienteId y tipoCuenta
+- [x] Log INFO tras persistir la cuenta con id generado
+- [x] Log INFO al registrar un movimiento con cuentaId, tipo y monto
+- [x] Log WARN cuando una cuenta consultada no existe
 
 #### Configuración
-- [ ] Agregar `logging.level.root` y `logging.level.com.tuempresa` a `application.properties`
+- [x] Agregar `logging.level.root` y `logging.level.com.tuempresa` a `application.properties`
       usando variables de entorno con default INFO
-- [ ] Agregar `LOG_LEVEL` y `LOG_LEVEL_APP` a `.env.example`
+- [x] Agregar `LOG_LEVEL` y `LOG_LEVEL_APP` a `.env.example`

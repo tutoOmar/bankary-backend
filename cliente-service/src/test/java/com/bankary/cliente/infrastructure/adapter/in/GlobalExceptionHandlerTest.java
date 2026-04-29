@@ -31,7 +31,7 @@ class GlobalExceptionHandlerTest {
     void handleNotFound() throws Exception {
         mockMvc.perform(get("/test/not-found"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("Entity not found"));
+                .andExpect(jsonPath("$.message").value("Entity not found"));
     }
 
     @Test
@@ -39,7 +39,7 @@ class GlobalExceptionHandlerTest {
     void handleConflict() throws Exception {
         mockMvc.perform(get("/test/conflict"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("Data conflict"));
+                .andExpect(jsonPath("$.message").value("Data conflict"));
     }
 
     @RestController
