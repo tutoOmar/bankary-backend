@@ -4,6 +4,7 @@ import com.bankary.cuenta.application.exception.ResourceNotFoundException;
 import com.bankary.cuenta.application.exception.SaldoInsuficienteException;
 import com.bankary.cuenta.domain.model.Cuenta;
 import com.bankary.cuenta.domain.model.Movimiento;
+import com.bankary.cuenta.domain.model.TipoCuenta;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import com.bankary.cuenta.domain.port.out.MovimientoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +41,7 @@ class MovimientoUseCaseImplTest {
         cuenta = Cuenta.builder()
                 .id(UUID.randomUUID())
                 .numeroCuenta("123456")
-                .tipoCuenta(Cuenta.TipoCuenta.AHORRO)
+                .tipoCuenta(TipoCuenta.AHORRO)
                 .saldoDisponible(new BigDecimal("1000"))
                 .estado(true)
                 .build();

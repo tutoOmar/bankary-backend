@@ -4,6 +4,7 @@ import com.bankary.cuenta.application.dto.CuentaRequest;
 import com.bankary.cuenta.application.dto.MovimientoRequest;
 import com.bankary.cuenta.domain.model.Cuenta;
 import com.bankary.cuenta.domain.model.Movimiento;
+import com.bankary.cuenta.domain.model.TipoCuenta;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,7 +70,7 @@ class MovimientoControllerIntegrationTest {
         Cuenta account = Cuenta.builder()
                 .id(UUID.randomUUID())
                 .numeroCuenta("478758")
-                .tipoCuenta(Cuenta.TipoCuenta.AHORRO)
+                .tipoCuenta(TipoCuenta.AHORRO)
                 .saldoInicial(new BigDecimal("2000"))
                 .saldoDisponible(new BigDecimal("2000"))
                 .clienteId(UUID.randomUUID())
@@ -97,7 +98,7 @@ class MovimientoControllerIntegrationTest {
         Cuenta account = Cuenta.builder()
                 .id(UUID.randomUUID())
                 .numeroCuenta("123")
-                .tipoCuenta(Cuenta.TipoCuenta.CORRIENTE)
+                .tipoCuenta(TipoCuenta.CORRIENTE)
                 .saldoInicial(new BigDecimal("100"))
                 .saldoDisponible(new BigDecimal("100"))
                 .clienteId(UUID.randomUUID())
