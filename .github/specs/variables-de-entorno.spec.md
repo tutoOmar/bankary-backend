@@ -1,6 +1,6 @@
 ---
 id: SPEC-006
-status: DRAFT
+status: IN_PROGRESS
 feature: variables-de-entorn
 created: 2026-04-29
 updated: 2026-04-29
