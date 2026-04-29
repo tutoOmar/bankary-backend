@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "cliente")
-@SecondaryTable(name = "persona", pkJoinColumns = @PrimaryKeyJoinColumn(name = "persona_id"))
+@Table(name = "persona")
+@SecondaryTable(name = "cliente", pkJoinColumns = @PrimaryKeyJoinColumn(name = "persona_id"))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,31 +22,31 @@ public class ClienteEntity {
     @Column(name = "persona_id")
     private UUID clienteId;
 
-    @Column(table = "persona", nullable = false)
+    @Column(nullable = false)
     private String nombre;
 
-    @Column(table = "persona")
+    @Column
     private String genero;
 
-    @Column(table = "persona")
+    @Column
     private Integer edad;
 
     @Enumerated(EnumType.STRING)
-    @Column(table = "persona", name = "tipo_documento", nullable = false)
+    @Column(name = "tipo_documento", nullable = false)
     private TipoDocumento tipoDocumento;
 
-    @Column(table = "persona", name = "numero_documento", nullable = false)
+    @Column(name = "numero_documento", nullable = false)
     private String numeroDocumento;
 
-    @Column(table = "persona")
+    @Column
     private String direccion;
 
-    @Column(table = "persona")
+    @Column
     private String telefono;
 
-    @Column(nullable = false)
+    @Column(table = "cliente", nullable = false)
     private String contrasena;
 
-    @Column(nullable = false)
+    @Column(table = "cliente", nullable = false)
     private boolean estado;
 }
