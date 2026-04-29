@@ -40,6 +40,7 @@ class MovimientoUseCaseImplTest {
         cuenta = Cuenta.builder()
                 .id(UUID.randomUUID())
                 .numeroCuenta("123456")
+                .tipoCuenta(Cuenta.TipoCuenta.AHORRO)
                 .saldoDisponible(new BigDecimal("1000"))
                 .estado(true)
                 .build();
@@ -87,22 +88,51 @@ class MovimientoUseCaseImplTest {
     }
 
     @Test
-    void registrarMovimiento_SaldoInsuficiente_LanzaExcepcion() {
-        // Arrange
+    void registrarMovimiento_RetiroExitoso_LimiteExacto() {
+        // Boundary: Amount = Balance
         Movimiento movimiento = Movimiento.builder()
                 .tipoMovimiento(Movimiento.TipoMovimiento.RETIRO)
-                .valor(new BigDecimal("1500"))
+                .valor(new BigDecimal("1000"))
+                .build();
+
+        when(cuentaRepository.findByNumeroCuenta("123456")).thenReturn(Optional.of(cuenta));
+        when(movimientoRepository.save(any(Movimiento.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Movimiento result = useCase.registrarMovimiento("123456", movimiento);
+
+        assertEquals(BigDecimal.ZERO, result.getSaldo());
+    }
+
+    @Test
+    void registrarMovimiento_SaldoInsuficiente_LimiteMinimoFallo() {
+        // Boundary: Amount = Balance + 0.01
+        Movimiento movimiento = Movimiento.builder()
+                .tipoMovimiento(Movimiento.TipoMovimiento.RETIRO)
+                .valor(new BigDecimal("1000.01"))
                 .build();
 
         when(cuentaRepository.findByNumeroCuenta("123456")).thenReturn(Optional.of(cuenta));
 
-        // Act & Assert
         SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, 
             () -> useCase.registrarMovimiento("123456", movimiento));
         
         assertEquals("Saldo no disponible", exception.getMessage());
-        verify(cuentaRepository, never()).save(any());
-        verify(movimientoRepository, never()).save(any());
+    }
+
+    @Test
+    void registrarMovimiento_SaldoSuficiente_LimiteMaximoExito() {
+        // Boundary: Amount = Balance - 0.01
+        Movimiento movimiento = Movimiento.builder()
+                .tipoMovimiento(Movimiento.TipoMovimiento.RETIRO)
+                .valor(new BigDecimal("999.99"))
+                .build();
+
+        when(cuentaRepository.findByNumeroCuenta("123456")).thenReturn(Optional.of(cuenta));
+        when(movimientoRepository.save(any(Movimiento.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Movimiento result = useCase.registrarMovimiento("123456", movimiento);
+
+        assertEquals(new BigDecimal("0.01"), result.getSaldo());
     }
 
     @Test

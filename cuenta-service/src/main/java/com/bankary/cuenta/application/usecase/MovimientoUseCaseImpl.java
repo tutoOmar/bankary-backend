@@ -7,6 +7,8 @@ import com.bankary.cuenta.domain.model.Movimiento;
 import com.bankary.cuenta.domain.port.in.MovimientoUseCase;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import com.bankary.cuenta.domain.port.out.MovimientoRepository;
+import com.bankary.cuenta.domain.model.strategy.CuentaStrategy;
+import com.bankary.cuenta.domain.model.strategy.CuentaStrategyFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +35,8 @@ public class MovimientoUseCaseImpl implements MovimientoUseCase {
         if (movimiento.getTipoMovimiento() == Movimiento.TipoMovimiento.DEPOSITO) {
             nuevoSaldo = cuenta.getSaldoDisponible().add(movimiento.getValor());
         } else {
-            if (cuenta.getSaldoDisponible().compareTo(movimiento.getValor()) < 0) {
-                throw new SaldoInsuficienteException("Saldo no disponible");
-            }
+            CuentaStrategy strategy = CuentaStrategyFactory.getStrategy(cuenta.getTipoCuenta());
+            strategy.validarRetiro(cuenta.getSaldoDisponible(), movimiento.getValor());
             nuevoSaldo = cuenta.getSaldoDisponible().subtract(movimiento.getValor());
         }
 
@@ -45,7 +46,6 @@ public class MovimientoUseCaseImpl implements MovimientoUseCase {
         movimiento.setFecha(Instant.now());
         movimiento.setSaldo(nuevoSaldo);
         movimiento.setCuentaId(cuenta.getId());
-        
         return movimientoRepository.save(movimiento);
     }
 
