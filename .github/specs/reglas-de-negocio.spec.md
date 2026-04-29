@@ -247,8 +247,8 @@ Formato de respuesta de error estándar (ya definido en SPEC-001):
 - [x] Actualizar sql/cliente/01_schema.sql: agregar columna tipo_documento
       y actualizar constraint UNIQUE
 - [x] Actualizar sql/cliente/02_seed.sql con tipoDocumento y numeroDocumento reales
-- [ ] Unit test: DocumentoValidator — CC con menos de 8 dígitos lanza excepción
-- [ ] Unit test: DocumentoValidator — TI con edad=20 lanza excepción
+- [x] Unit test: DocumentoValidator — CC con menos de 8 dígitos lanza excepción
+- [x] Unit test: DocumentoValidator — TI con edad=20 lanza excepción
 
 ### cuenta-service
 - [x] Crear ENUM TipoCuenta { AHORRO, CORRIENTE } en domain/model si no existe
@@ -259,5 +259,5 @@ Formato de respuesta de error estándar (ya definido en SPEC-001):
 - [x] Actualizar CuentaUseCaseImpl para consultar cuentas activas y llamar
       CuentaLimiteValidator antes de persistir una nueva cuenta
 - [x] Mapear CuentaDuplicadaException → 409 en @RestControllerAdvice
-- [ ] Unit test: CuentaLimiteValidator — cliente con AHORRO activo intenta crear
+- [x] Unit test: CuentaLimiteValidator — cliente con AHORRO activo intenta crear
       otro AHORRO lanza CuentaDuplicadaException
