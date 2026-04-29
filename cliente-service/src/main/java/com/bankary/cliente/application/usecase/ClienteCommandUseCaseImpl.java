@@ -11,11 +11,13 @@ import com.bankary.cliente.domain.port.out.ClienteEventPublisher;
 import com.bankary.cliente.domain.port.out.ClienteRepository;
 import com.bankary.cliente.domain.port.out.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
 
@@ -48,7 +50,7 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
                     new ClienteEventPublisher.ClienteEvent(saved.getClienteId(), saved.getNombre(), Instant.now(),
                             "cliente.created"));
         } catch (Exception e) {
-            // Log and ignore to not fail transaction
+            log.error("Error al publicar evento de creacion de cliente en RabbitMQ: {}", e.getMessage(), e);
         }
 
         return toResponse(saved);
@@ -83,7 +85,7 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
                     new ClienteEventPublisher.ClienteEvent(updated.getClienteId(), updated.getNombre(), Instant.now(),
                             "cliente.updated"));
         } catch (Exception e) {
-            // Log and ignore
+            log.error("Error al publicar evento de actualizacion de cliente en RabbitMQ: {}", e.getMessage(), e);
         }
 
         return toResponse(updated);
