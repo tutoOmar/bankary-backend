@@ -20,9 +20,9 @@ services:
   postgres-cliente:
     image: postgres:15
     environment:
-      POSTGRES_DB: cliente_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ${CLIENTE_DB_NAME:-cliente_db}
+      POSTGRES_USER: ${DB_USERNAME:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
     ports:
       - "5432:5432"
     healthcheck:
@@ -39,9 +39,9 @@ services:
   postgres-cuenta:
     image: postgres:15
     environment:
-      POSTGRES_DB: cuenta_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ${CUENTA_DB_NAME:-cuenta_db}
+      POSTGRES_USER: ${DB_USERNAME:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
     ports:
       - "5433:5432"
     healthcheck:
@@ -63,10 +63,12 @@ services:
     restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-cliente:5432/cliente_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=pass
-      - SPRING_RABBITMQ_HOST=rabbitmq
+      - DB_URL=${CLIENTE_DB_URL:-jdbc:postgresql://postgres-cliente:5432/cliente_db}
+      - DB_USERNAME=${DB_USERNAME:-user}
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - RABBITMQ_HOST=rabbitmq
+      - APP_NAME=cliente-service
+      - SERVER_PORT=8080
     depends_on:
       postgres-cliente:
         condition: service_healthy
@@ -83,11 +85,13 @@ services:
     restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-cuenta:5432/cuenta_db
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=pass
-      - SPRING_RABBITMQ_HOST=rabbitmq
+      - DB_URL=${CUENTA_DB_URL:-jdbc:postgresql://postgres-cuenta:5432/cuenta_db}
+      - DB_USERNAME=${DB_USERNAME:-user}
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - RABBITMQ_HOST=rabbitmq
+      - APP_NAME=cuenta-service
       - SERVER_PORT=8081
+      - CLIENTE_SERVICE_URL=${CLIENTE_SERVICE_URL:-http://cliente-service:8080}
     depends_on:
       postgres-cuenta:
         condition: service_healthy
