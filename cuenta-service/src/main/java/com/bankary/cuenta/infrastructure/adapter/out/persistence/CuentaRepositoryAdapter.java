@@ -1,6 +1,7 @@
 package com.bankary.cuenta.infrastructure.adapter.out.persistence;
 
 import com.bankary.cuenta.domain.model.Cuenta;
+import com.bankary.cuenta.domain.model.TipoCuenta;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import com.bankary.cuenta.infrastructure.adapter.out.persistence.entity.CuentaEntity;
 import com.bankary.cuenta.infrastructure.adapter.out.persistence.repository.CuentaJpaRepository;
@@ -37,6 +38,13 @@ public class CuentaRepositoryAdapter implements CuentaRepository {
     }
 
     @Override
+    public List<Cuenta> findByClienteIdAndEstadoTrue(UUID clienteId) {
+        return jpaRepository.findByClienteIdAndEstadoTrue(clienteId).stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Cuenta> findAll() {
         return jpaRepository.findAll().stream()
                 .map(this::toDomain)
@@ -53,7 +61,7 @@ public class CuentaRepositoryAdapter implements CuentaRepository {
         return Cuenta.builder()
                 .id(entity.getId())
                 .numeroCuenta(entity.getNumeroCuenta())
-                .tipoCuenta(Cuenta.TipoCuenta.valueOf(entity.getTipoCuenta().name()))
+                .tipoCuenta(TipoCuenta.valueOf(entity.getTipoCuenta().name()))
                 .saldoInicial(entity.getSaldoInicial())
                 .saldoDisponible(entity.getSaldoDisponible())
                 .estado(entity.isEstado())

@@ -22,6 +22,8 @@ class ClienteTest {
             Cliente cliente = Cliente.builder()
                     .nombre("Test User")
                     .edad(age)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .build();
             assertDoesNotThrow(cliente::validate);
         }
@@ -33,6 +35,8 @@ class ClienteTest {
             Cliente cliente = Cliente.builder()
                     .nombre("Test User")
                     .edad(age)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .build();
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, cliente::validate);
             assertEquals("La edad debe estar entre 0 y 120", ex.getMessage());
@@ -44,6 +48,8 @@ class ClienteTest {
             Cliente cliente = Cliente.builder()
                     .nombre("Test User")
                     .edad(null)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .build();
             assertThrows(IllegalArgumentException.class, cliente::validate);
         }
@@ -59,6 +65,8 @@ class ClienteTest {
             Cliente cliente = Cliente.builder()
                     .nombre("Juan Perez")
                     .edad(30)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .build();
             assertDoesNotThrow(cliente::validate);
         }
@@ -70,6 +78,8 @@ class ClienteTest {
             Cliente cliente = Cliente.builder()
                     .nombre(name)
                     .edad(30)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .build();
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, cliente::validate);
             assertEquals("El nombre no puede estar vacio", ex.getMessage());
@@ -81,8 +91,40 @@ class ClienteTest {
             Cliente cliente = Cliente.builder()
                     .nombre(null)
                     .edad(30)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .build();
             assertThrows(IllegalArgumentException.class, cliente::validate);
+        }
+    }
+
+    @Nested
+    @DisplayName("Documento Tests")
+    class DocumentoTests {
+        @Test
+        @DisplayName("Reject null tipoDocumento")
+        void shouldRejectNullTipo() {
+            Cliente cliente = Cliente.builder()
+                    .nombre("Test")
+                    .edad(30)
+                    .tipoDocumento(null)
+                    .numeroDocumento("123")
+                    .build();
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, cliente::validate);
+            assertEquals("El tipo de documento es obligatorio", ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("Reject null numeroDocumento")
+        void shouldRejectNullNumero() {
+            Cliente cliente = Cliente.builder()
+                    .nombre("Test")
+                    .edad(30)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento(null)
+                    .build();
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, cliente::validate);
+            assertEquals("El numero de documento es obligatorio", ex.getMessage());
         }
     }
 }

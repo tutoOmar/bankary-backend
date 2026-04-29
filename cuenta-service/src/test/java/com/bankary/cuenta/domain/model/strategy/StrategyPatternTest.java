@@ -1,6 +1,7 @@
 package com.bankary.cuenta.domain.model.strategy;
 
 import com.bankary.cuenta.application.exception.SaldoInsuficienteException;
+import com.bankary.cuenta.domain.model.TipoCuenta;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -31,8 +32,8 @@ class StrategyPatternTest {
     @Test
     void factory_ReturnsCorrectStrategy() {
         // Just checking the factory logic
-        assertNotNull(CuentaStrategyFactory.getStrategy(com.bankary.cuenta.domain.model.Cuenta.TipoCuenta.AHORRO));
-        assertNotNull(CuentaStrategyFactory.getStrategy(com.bankary.cuenta.domain.model.Cuenta.TipoCuenta.CORRIENTE));
+        assertNotNull(CuentaStrategyFactory.getStrategy(TipoCuenta.AHORRO));
+        assertNotNull(CuentaStrategyFactory.getStrategy(TipoCuenta.CORRIENTE));
     }
 
     private void assertNotNull(Object obj) {

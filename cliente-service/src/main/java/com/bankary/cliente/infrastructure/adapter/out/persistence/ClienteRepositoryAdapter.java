@@ -1,6 +1,7 @@
 package com.bankary.cliente.infrastructure.adapter.out.persistence;
 
 import com.bankary.cliente.domain.model.Cliente;
+import com.bankary.cliente.domain.model.TipoDocumento;
 import com.bankary.cliente.domain.port.out.ClienteRepository;
 import com.bankary.cliente.infrastructure.adapter.out.persistence.entity.ClienteEntity;
 import com.bankary.cliente.infrastructure.adapter.out.persistence.repository.JpaClienteRepository;
@@ -24,8 +25,8 @@ public class ClienteRepositoryAdapter implements ClienteRepository {
     }
 
     @Override
-    public Optional<Cliente> findByIdentificacion(String identificacion) {
-        return jpaRepository.findByIdentificacion(identificacion).map(this::toDomain);
+    public Optional<Cliente> findByDocumento(TipoDocumento tipoDocumento, String numeroDocumento) {
+        return jpaRepository.findByTipoDocumentoAndNumeroDocumento(tipoDocumento, numeroDocumento).map(this::toDomain);
     }
 
     @Override
@@ -53,7 +54,8 @@ public class ClienteRepositoryAdapter implements ClienteRepository {
                 .nombre(entity.getNombre())
                 .genero(entity.getGenero())
                 .edad(entity.getEdad())
-                .identificacion(entity.getIdentificacion())
+                .tipoDocumento(entity.getTipoDocumento())
+                .numeroDocumento(entity.getNumeroDocumento())
                 .direccion(entity.getDireccion())
                 .telefono(entity.getTelefono())
                 .contrasena(entity.getContrasena())
@@ -67,7 +69,8 @@ public class ClienteRepositoryAdapter implements ClienteRepository {
                 .nombre(domain.getNombre())
                 .genero(domain.getGenero())
                 .edad(domain.getEdad())
-                .identificacion(domain.getIdentificacion())
+                .tipoDocumento(domain.getTipoDocumento())
+                .numeroDocumento(domain.getNumeroDocumento())
                 .direccion(domain.getDireccion())
                 .telefono(domain.getTelefono())
                 .contrasena(domain.getContrasena())

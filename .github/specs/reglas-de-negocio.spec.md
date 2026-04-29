@@ -1,6 +1,6 @@
 ---
 id: SPEC-005
-status: DRAFT
+status: IMPLEMENTED
 feature: reglas-de-negocio
 created: 2026-04-29
 updated: 2026-04-29
@@ -234,30 +234,30 @@ Formato de respuesta de error estándar (ya definido en SPEC-001):
 ## 3. LISTA DE TAREAS
 
 ### cliente-service
-- [ ] Agregar ENUM TipoDocumento { CC, TI, CE, NIT, PASAPORTE } en domain/model
-- [ ] Agregar columna tipo_documento a PersonaEntity y actualizar constraint UNIQUE
+- [x] Agregar ENUM TipoDocumento { CC, TI, CE, NIT, PASAPORTE } en domain/model
+- [x] Agregar columna tipo_documento a PersonaEntity y actualizar constraint UNIQUE
       a (tipo_documento, numero_documento)
-- [ ] Renombrar campo identificacion → numero_documento en PersonaEntity,
+- [x] Renombrar campo identificacion → numero_documento en PersonaEntity,
       ClienteRequest, ClienteResponse y Commands
-- [ ] Crear DocumentoValidator en domain/ con regex por tipo y cruce edad–documento
-- [ ] Crear DocumentoInvalidoException en domain/
-- [ ] Actualizar ClienteUseCaseImpl para llamar DocumentoValidator.validate()
+- [x] Crear DocumentoValidator en domain/ con regex por tipo y cruce edad–documento
+- [x] Crear DocumentoInvalidoException en domain/
+- [x] Actualizar ClienteUseCaseImpl para llamar DocumentoValidator.validate()
       antes de persistir
-- [ ] Mapear DocumentoInvalidoException → 400 en @RestControllerAdvice
-- [ ] Actualizar sql/cliente/01_schema.sql: agregar columna tipo_documento
+- [x] Mapear DocumentoInvalidoException → 400 en @RestControllerAdvice
+- [x] Actualizar sql/cliente/01_schema.sql: agregar columna tipo_documento
       y actualizar constraint UNIQUE
-- [ ] Actualizar sql/cliente/02_seed.sql con tipoDocumento y numeroDocumento reales
-- [ ] Unit test: DocumentoValidator — CC con menos de 8 dígitos lanza excepción
-- [ ] Unit test: DocumentoValidator — TI con edad=20 lanza excepción
+- [x] Actualizar sql/cliente/02_seed.sql con tipoDocumento y numeroDocumento reales
+- [x] Unit test: DocumentoValidator — CC con menos de 8 dígitos lanza excepción
+- [x] Unit test: DocumentoValidator — TI con edad=20 lanza excepción
 
 ### cuenta-service
-- [ ] Crear ENUM TipoCuenta { AHORRO, CORRIENTE } en domain/model si no existe
-- [ ] Agregar método findByClienteIdAndEstadoTrue() en CuentaRepository (port out)
+- [x] Crear ENUM TipoCuenta { AHORRO, CORRIENTE } en domain/model si no existe
+- [x] Agregar método findByClienteIdAndEstadoTrue() en CuentaRepository (port out)
       y su implementación en CuentaJpaRepository
-- [ ] Crear CuentaLimiteValidator en domain/ con lógica de límite por tipo
-- [ ] Crear CuentaDuplicadaException en domain/
-- [ ] Actualizar CuentaUseCaseImpl para consultar cuentas activas y llamar
+- [x] Crear CuentaLimiteValidator en domain/ con lógica de límite por tipo
+- [x] Crear CuentaDuplicadaException en domain/
+- [x] Actualizar CuentaUseCaseImpl para consultar cuentas activas y llamar
       CuentaLimiteValidator antes de persistir una nueva cuenta
-- [ ] Mapear CuentaDuplicadaException → 409 en @RestControllerAdvice
-- [ ] Unit test: CuentaLimiteValidator — cliente con AHORRO activo intenta crear
+- [x] Mapear CuentaDuplicadaException → 409 en @RestControllerAdvice
+- [x] Unit test: CuentaLimiteValidator — cliente con AHORRO activo intenta crear
       otro AHORRO lanza CuentaDuplicadaException

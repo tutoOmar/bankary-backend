@@ -13,7 +13,8 @@ public class Persona {
     private String nombre;
     private String genero;
     private Integer edad;
-    private String identificacion;
+    private TipoDocumento tipoDocumento;
+    private String numeroDocumento;
     private String direccion;
     private String telefono;
 
@@ -23,6 +24,12 @@ public class Persona {
         }
         if (edad == null || edad < 0 || edad > 120) {
             throw new IllegalArgumentException("La edad debe estar entre 0 y 120");
+        }
+        if (tipoDocumento == null) {
+            throw new IllegalArgumentException("El tipo de documento es obligatorio");
+        }
+        if (numeroDocumento == null || numeroDocumento.isBlank()) {
+            throw new IllegalArgumentException("El numero de documento es obligatorio");
         }
     }
 }

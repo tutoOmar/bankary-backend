@@ -5,6 +5,8 @@ import com.bankary.cliente.application.dto.CreateClienteCommand;
 import com.bankary.cliente.application.dto.UpdateClienteCommand;
 import com.bankary.cliente.application.exception.ConflictException;
 import com.bankary.cliente.application.exception.ResourceNotFoundException;
+import com.bankary.cliente.application.mapper.ClienteMapper;
+import com.bankary.cliente.domain.DocumentoValidator;
 import com.bankary.cliente.domain.model.Cliente;
 import com.bankary.cliente.domain.port.in.ClienteCommandUseCase;
 import com.bankary.cliente.domain.port.out.ClienteEventPublisher;
@@ -27,9 +29,11 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
 
     @Override
     public ClienteResponse create(CreateClienteCommand command) {
-        Optional<Cliente> existing = clienteRepository.findByIdentificacion(command.getIdentificacion());
+        DocumentoValidator.validate(command.getTipoDocumento(), command.getNumeroDocumento(), command.getEdad());
+
+        Optional<Cliente> existing = clienteRepository.findByDocumento(command.getTipoDocumento(), command.getNumeroDocumento());
         if (existing.isPresent()) {
-            throw new ConflictException("Ya existe un cliente con la identificacion dada");
+            throw new ConflictException("Ya existe un cliente con el documento dado");
         }
 
         Cliente cliente = new Cliente();
@@ -37,7 +41,8 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
         cliente.setNombre(command.getNombre());
         cliente.setGenero(command.getGenero());
         cliente.setEdad(command.getEdad());
-        cliente.setIdentificacion(command.getIdentificacion());
+        cliente.setTipoDocumento(command.getTipoDocumento());
+        cliente.setNumeroDocumento(command.getNumeroDocumento());
         cliente.setDireccion(command.getDireccion());
         cliente.setTelefono(command.getTelefono());
         cliente.setContrasena(passwordEncoder.encode(command.getContrasena()));
@@ -53,7 +58,7 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
             log.error("Error al publicar evento de creacion de cliente en RabbitMQ: {}", e.getMessage(), e);
         }
 
-        return toResponse(saved);
+        return ClienteMapper.toResponse(saved);
     }
 
     @Override
@@ -61,17 +66,21 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
         Cliente cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
-        if (!cliente.getIdentificacion().equals(command.getIdentificacion())) {
-            Optional<Cliente> existing = clienteRepository.findByIdentificacion(command.getIdentificacion());
+        DocumentoValidator.validate(command.getTipoDocumento(), command.getNumeroDocumento(), command.getEdad());
+
+        if (!cliente.getTipoDocumento().equals(command.getTipoDocumento()) || 
+            !cliente.getNumeroDocumento().equals(command.getNumeroDocumento())) {
+            Optional<Cliente> existing = clienteRepository.findByDocumento(command.getTipoDocumento(), command.getNumeroDocumento());
             if (existing.isPresent() && !existing.get().getClienteId().equals(clienteId)) {
-                throw new ConflictException("Ya existe otro cliente con la identificacion dada");
+                throw new ConflictException("Ya existe otro cliente con el documento dado");
             }
         }
 
         cliente.setNombre(command.getNombre());
         cliente.setGenero(command.getGenero());
         cliente.setEdad(command.getEdad());
-        cliente.setIdentificacion(command.getIdentificacion());
+        cliente.setTipoDocumento(command.getTipoDocumento());
+        cliente.setNumeroDocumento(command.getNumeroDocumento());
         cliente.setDireccion(command.getDireccion());
         cliente.setTelefono(command.getTelefono());
         if (command.getContrasena() != null && !command.getContrasena().isBlank()) {
@@ -88,7 +97,7 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
             log.error("Error al publicar evento de actualizacion de cliente en RabbitMQ: {}", e.getMessage(), e);
         }
 
-        return toResponse(updated);
+        return ClienteMapper.toResponse(updated);
     }
 
     @Override
@@ -97,18 +106,5 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
         cliente.setEstado(false);
         clienteRepository.save(cliente);
-    }
-
-    private ClienteResponse toResponse(Cliente cliente) {
-        return ClienteResponse.builder()
-                .clienteId(cliente.getClienteId())
-                .nombre(cliente.getNombre())
-                .genero(cliente.getGenero())
-                .edad(cliente.getEdad())
-                .identificacion(cliente.getIdentificacion())
-                .direccion(cliente.getDireccion())
-                .telefono(cliente.getTelefono())
-                .estado(cliente.isEstado())
-                .build();
     }
 }

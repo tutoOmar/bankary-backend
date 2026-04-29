@@ -4,6 +4,7 @@ import com.bankary.cliente.application.dto.ClienteRequest;
 import com.bankary.cliente.application.dto.ClienteResponse;
 import com.bankary.cliente.application.dto.CreateClienteCommand;
 import com.bankary.cliente.application.dto.UpdateClienteCommand;
+import com.bankary.cliente.domain.model.TipoDocumento;
 import com.bankary.cliente.domain.port.in.ClienteCommandUseCase;
 import com.bankary.cliente.domain.port.in.ClienteQueryUseCase;
 import jakarta.validation.Valid;
@@ -29,7 +30,8 @@ public class ClienteController {
                 .nombre(request.getNombre())
                 .genero(request.getGenero())
                 .edad(request.getEdad())
-                .identificacion(request.getIdentificacion())
+                .tipoDocumento(TipoDocumento.valueOf(request.getTipoDocumento()))
+                .numeroDocumento(request.getNumeroDocumento())
                 .direccion(request.getDireccion())
                 .telefono(request.getTelefono())
                 .contrasena(request.getContrasena())
@@ -45,7 +47,8 @@ public class ClienteController {
                 .nombre(request.getNombre())
                 .genero(request.getGenero())
                 .edad(request.getEdad())
-                .identificacion(request.getIdentificacion())
+                .tipoDocumento(TipoDocumento.valueOf(request.getTipoDocumento()))
+                .numeroDocumento(request.getNumeroDocumento())
                 .direccion(request.getDireccion())
                 .telefono(request.getTelefono())
                 .contrasena(request.getContrasena())

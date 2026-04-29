@@ -23,8 +23,11 @@ public class ClienteRequest {
     @PositiveOrZero(message = "La edad debe ser mayor o igual a 0")
     private Integer edad;
     
-    @NotBlank(message = "La identificacion es obligatoria")
-    private String identificacion;
+    @NotBlank(message = "El tipo de documento es obligatorio")
+    private String tipoDocumento;
+
+    @NotBlank(message = "El numero de documento es obligatorio")
+    private String numeroDocumento;
     
     @NotBlank(message = "La direccion es obligatoria")
     private String direccion;

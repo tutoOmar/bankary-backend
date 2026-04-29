@@ -2,6 +2,7 @@ package com.bankary.cliente.application.usecase;
 
 import com.bankary.cliente.application.dto.ClienteResponse;
 import com.bankary.cliente.application.exception.ResourceNotFoundException;
+import com.bankary.cliente.application.mapper.ClienteMapper;
 import com.bankary.cliente.domain.model.Cliente;
 import com.bankary.cliente.domain.port.in.ClienteQueryUseCase;
 import com.bankary.cliente.domain.port.out.ClienteRepository;
@@ -21,26 +22,13 @@ public class ClienteQueryUseCaseImpl implements ClienteQueryUseCase {
         Cliente cliente = clienteRepository.findById(clienteId)
                 .filter(Cliente::isEstado)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
-        return toResponse(cliente);
+        return ClienteMapper.toResponse(cliente);
     }
 
     @Override
     public List<ClienteResponse> list() {
         return clienteRepository.findAllActivos().stream()
-                .map(this::toResponse)
+                .map(ClienteMapper::toResponse)
                 .collect(Collectors.toList());
-    }
-
-    private ClienteResponse toResponse(Cliente cliente) {
-        return ClienteResponse.builder()
-                .clienteId(cliente.getClienteId())
-                .nombre(cliente.getNombre())
-                .genero(cliente.getGenero())
-                .edad(cliente.getEdad())
-                .identificacion(cliente.getIdentificacion())
-                .direccion(cliente.getDireccion())
-                .telefono(cliente.getTelefono())
-                .estado(cliente.isEstado())
-                .build();
     }
 }

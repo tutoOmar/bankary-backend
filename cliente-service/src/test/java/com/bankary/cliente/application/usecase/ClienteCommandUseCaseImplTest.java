@@ -6,6 +6,7 @@ import com.bankary.cliente.application.dto.UpdateClienteCommand;
 import com.bankary.cliente.application.exception.ConflictException;
 import com.bankary.cliente.application.exception.ResourceNotFoundException;
 import com.bankary.cliente.domain.model.Cliente;
+import com.bankary.cliente.domain.model.TipoDocumento;
 import com.bankary.cliente.domain.port.out.ClienteEventPublisher;
 import com.bankary.cliente.domain.port.out.ClienteRepository;
 import com.bankary.cliente.domain.port.out.PasswordEncoder;
@@ -52,17 +53,20 @@ class ClienteCommandUseCaseImplTest {
         void create_success() {
             CreateClienteCommand command = CreateClienteCommand.builder()
                     .nombre("Juan Perez")
-                    .identificacion("123456789")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
+                    .edad(30)
                     .contrasena("pass123")
                     .build();
 
-            when(clienteRepository.findByIdentificacion("123456789")).thenReturn(Optional.empty());
+            when(clienteRepository.findByDocumento(TipoDocumento.CC, "1023456789")).thenReturn(Optional.empty());
             when(passwordEncoder.encode("pass123")).thenReturn("hashedPass");
             
             Cliente savedCliente = Cliente.builder()
                     .clienteId(UUID.randomUUID())
                     .nombre("Juan Perez")
-                    .identificacion("123456789")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
                     .estado(true)
                     .build();
             when(clienteRepository.save(any(Cliente.class))).thenReturn(savedCliente);
@@ -78,11 +82,13 @@ class ClienteCommandUseCaseImplTest {
         @DisplayName("Resilience: Should not fail if Event Publisher throws Exception")
         void create_eventPublisherFailure_shouldStillSucceed() {
             CreateClienteCommand command = CreateClienteCommand.builder()
-                    .identificacion("123456789")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("1023456789")
+                    .edad(30)
                     .contrasena("pass123")
                     .build();
 
-            when(clienteRepository.findByIdentificacion(any())).thenReturn(Optional.empty());
+            when(clienteRepository.findByDocumento(any(), any())).thenReturn(Optional.empty());
             when(clienteRepository.save(any())).thenReturn(new Cliente());
             doThrow(new RuntimeException("Kafka down")).when(eventPublisher).publishClienteCreado(any());
 
@@ -99,21 +105,25 @@ class ClienteCommandUseCaseImplTest {
         void update_conflictIdentification() {
             UUID clientId = UUID.randomUUID();
             UpdateClienteCommand command = UpdateClienteCommand.builder()
-                    .identificacion("999999") // New ID
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("99999999") // New ID
+                    .edad(30)
                     .build();
 
             Cliente existingInDb = Cliente.builder()
                     .clienteId(clientId)
-                    .identificacion("111111") // Current ID
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111") // Current ID
                     .build();
 
             Cliente anotherClient = Cliente.builder()
                     .clienteId(UUID.randomUUID()) // Different ID
-                    .identificacion("999999")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("99999999")
                     .build();
 
             when(clienteRepository.findById(clientId)).thenReturn(Optional.of(existingInDb));
-            when(clienteRepository.findByIdentificacion("999999")).thenReturn(Optional.of(anotherClient));
+            when(clienteRepository.findByDocumento(TipoDocumento.CC, "99999999")).thenReturn(Optional.of(anotherClient));
 
             assertThrows(ConflictException.class, () -> clienteCommandUseCase.update(clientId, command));
         }
@@ -124,13 +134,16 @@ class ClienteCommandUseCaseImplTest {
             UUID clientId = UUID.randomUUID();
             UpdateClienteCommand command = UpdateClienteCommand.builder()
                     .nombre("New Name")
-                    .identificacion("111111")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .edad(30)
                     .contrasena("") // Blank password
                     .build();
 
             Cliente existing = Cliente.builder()
                     .clienteId(clientId)
-                    .identificacion("111111")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
                     .contrasena("oldHashedPassword")
                     .build();
 

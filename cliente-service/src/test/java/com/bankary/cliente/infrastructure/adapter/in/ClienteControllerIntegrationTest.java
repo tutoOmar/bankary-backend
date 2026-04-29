@@ -1,13 +1,13 @@
 package com.bankary.cliente.infrastructure.adapter.in;
 
 import com.bankary.cliente.application.dto.ClienteRequest;
+import com.bankary.cliente.domain.model.TipoDocumento;
 import com.bankary.cliente.domain.port.out.ClienteRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -65,7 +65,8 @@ class ClienteControllerIntegrationTest {
                 .nombre("Maria Gomez")
                 .genero("F")
                 .edad(28)
-                .identificacion("987654321")
+                .tipoDocumento("CC")
+                .numeroDocumento("987654321")
                 .direccion("Avenida Central 456")
                 .telefono("5559876")
                 .contrasena("securePassword")
@@ -78,6 +79,6 @@ class ClienteControllerIntegrationTest {
                 .andExpect(jsonPath("$.nombre").value("Maria Gomez"))
                 .andExpect(jsonPath("$.clienteId").exists());
 
-        assertTrue(clienteRepository.findByIdentificacion("987654321").isPresent());
+        assertTrue(clienteRepository.findByDocumento(TipoDocumento.CC, "987654321").isPresent());
     }
 }
