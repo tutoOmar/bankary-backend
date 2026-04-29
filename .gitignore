@@ -29,6 +29,7 @@ temp/
 **/test-results/
 .env
 .env.*
+!.env.example
 docker-compose.override.yml
 local.properties
 *~

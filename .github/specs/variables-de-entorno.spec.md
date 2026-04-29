@@ -1,6 +1,6 @@
 ---
 id: SPEC-006
-status: IN_PROGRESS
+status: IMPLEMENTED
 feature: variables-de-entorn
 created: 2026-04-29
 updated: 2026-04-29
@@ -195,23 +195,23 @@ Verificar y asegurar que `.gitignore` incluya:
 ## 3. LISTA DE TAREAS
 
 ### Ambos servicios
-- [ ] Revisar `application.properties` / `application.yml` de cada servicio e identificar
+- [x] Revisar `application.properties` / `application.yml` de cada servicio e identificar
       todos los valores hardcodeados (URL, credenciales, puertos, nombres)
-- [ ] Reemplazar credenciales de base de datos por `${DB_URL}`, `${DB_USERNAME}`,
+- [x] Reemplazar credenciales de base de datos por `${DB_URL}`, `${DB_USERNAME}`,
       `${DB_PASSWORD}` sin valor por defecto
-- [ ] Reemplazar puerto, nombre de app y URL de Eureka por variables con default
+- [x] Reemplazar puerto, nombre de app y URL de Eureka por variables con default
       (`${SERVER_PORT:808X}`, `${APP_NAME:...}`, `${EUREKA_SERVER_URL:...}`)
-- [ ] En cuenta-service: externalizar URL de cliente-service a `${CLIENTE_SERVICE_URL}`
+- [x] En cuenta-service: externalizar URL de cliente-service a `${CLIENTE_SERVICE_URL}`
 
 ### Repositorio
-- [ ] Crear `.env.example` en la raíz con todas las variables documentadas y comentadas
-- [ ] Verificar que `.gitignore` incluye `.env` y excluye `.env.example`
-- [ ] Si existe docker-compose.yml: actualizar `environment` de cada servicio
+- [x] Crear `.env.example` en la raíz con todas las variables documentadas y comentadas
+- [x] Verificar que `.gitignore` incluye `.env` y excluye `.env.example`
+- [x] Si existe docker-compose.yml: actualizar `environment` de cada servicio
       para leer desde variables de entorno del host / archivo `.env`
 
 ### Verificación
-- [ ] Levantar ambos servicios localmente con variables definidas y confirmar
+- [x] Levantar ambos servicios localmente con variables definidas y confirmar
       que `/actuator/health` responde `UP`
-- [ ] Confirmar que sin `DB_PASSWORD` el servicio falla al arrancar con error claro
-- [ ] Hacer `git log --all -- '*.env'` y confirmar que ningún `.env` real
+- [x] Confirmar que sin `DB_PASSWORD` el servicio falla al arrancar con error claro
+- [x] Hacer `git log --all -- '*.env'` y confirmar que ningún `.env` real
       fue commiteado en el historial
