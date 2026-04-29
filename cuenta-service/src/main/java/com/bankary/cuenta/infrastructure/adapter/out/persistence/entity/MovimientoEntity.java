@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "movimientos")
+@Table(name = "movimiento")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
