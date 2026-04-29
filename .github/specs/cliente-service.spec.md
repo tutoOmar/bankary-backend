@@ -1,6 +1,6 @@
 ---
 id: SPEC-001
-status: APPROVED
+status: IMPLEMENTED
 feature: cliente-service
 created: 2026-04-28
 updated: 2026-04-28
@@ -197,6 +197,11 @@ DELETE /api/v1/clientes/{clienteId}
 - Password hashing en capa application/usecase.
 - Publicación de eventos: Fire-and-forget. En caso de fallo de RabbitMQ, loguear el error pero no fallar la transacción principal (persistencia en BD debe completar).
 - Todos los campos de entrada (nombre, genero, direccion, telefono, identificacion) son String simples, sin validaciones de formato complejas. Solo validar longitud máxima y que no estén vacíos.
+
+### Stack Tecnológico
+- **Build Tool**: Maven (pom.xml)
+- **Getters/Setters**: Lombok (`@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Data`) — reduce boilerplate en DTOs y entidades.
+- **Lombok Configuration**: agregar `<plugin>` en pom.xml y `@java.beans.ConstructorProperties` si es necesario para compatibilidad con frameworks.
 
 ---
 

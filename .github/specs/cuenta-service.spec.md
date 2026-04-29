@@ -171,6 +171,11 @@ Formato de respuesta por cada registro:
 - Validar concurrencia: version manual en entidad y 409 en conflicto si aplica.
 - Exponer excepciones de dominio con códigos HTTP claros.
 
+### Stack Tecnológico
+- **Build Tool**: Maven (pom.xml)
+- **Getters/Setters**: Lombok (`@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Data`) — reduce boilerplate en DTOs y entidades.
+- **Lombok Configuration**: agregar `<plugin>` en pom.xml y `@java.beans.ConstructorProperties` si es necesario para compatibilidad con frameworks.
+
 ---
 
 ## 3. LISTA DE TAREAS
