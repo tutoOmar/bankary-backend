@@ -16,7 +16,8 @@ public class ClienteResponse {
     private String nombre;
     private String genero;
     private Integer edad;
-    private String identificacion;
+    private String tipoDocumento;
+    private String numeroDocumento;
     private String direccion;
     private String telefono;
     private boolean estado;

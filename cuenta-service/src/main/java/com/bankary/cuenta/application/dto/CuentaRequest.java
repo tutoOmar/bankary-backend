@@ -1,6 +1,6 @@
 package com.bankary.cuenta.application.dto;
 
-import com.bankary.cuenta.domain.model.Cuenta;
+import com.bankary.cuenta.domain.model.TipoCuenta;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -15,7 +15,7 @@ public class CuentaRequest {
     private String numeroCuenta;
     
     @NotNull
-    private Cuenta.TipoCuenta tipoCuenta;
+    private TipoCuenta tipoCuenta;
     
     @NotNull
     @PositiveOrZero

@@ -20,8 +20,4 @@ public class Cuenta {
     private BigDecimal saldoDisponible;
     private boolean estado;
     private UUID clienteId;
-
-    public enum TipoCuenta {
-        AHORRO, CORRIENTE
-    }
 }

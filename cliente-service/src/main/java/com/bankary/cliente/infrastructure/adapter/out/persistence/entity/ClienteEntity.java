@@ -1,5 +1,6 @@
 package com.bankary.cliente.infrastructure.adapter.out.persistence.entity;
 
+import com.bankary.cliente.domain.model.TipoDocumento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,8 +31,12 @@ public class ClienteEntity {
     @Column(table = "persona")
     private Integer edad;
 
-    @Column(table = "persona", unique = true, nullable = false)
-    private String identificacion;
+    @Enumerated(EnumType.STRING)
+    @Column(table = "persona", name = "tipo_documento", nullable = false)
+    private TipoDocumento tipoDocumento;
+
+    @Column(table = "persona", name = "numero_documento", nullable = false)
+    private String numeroDocumento;
 
     @Column(table = "persona")
     private String direccion;

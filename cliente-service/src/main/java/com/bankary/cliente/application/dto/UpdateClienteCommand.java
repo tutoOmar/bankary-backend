@@ -1,5 +1,6 @@
 package com.bankary.cliente.application.dto;
 
+import com.bankary.cliente.domain.model.TipoDocumento;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,8 @@ public class UpdateClienteCommand {
     private String nombre;
     private String genero;
     private Integer edad;
-    private String identificacion;
+    private TipoDocumento tipoDocumento;
+    private String numeroDocumento;
     private String direccion;
     private String telefono;
     private String contrasena;

@@ -3,6 +3,7 @@ package com.bankary.cuenta.infrastructure.adapter.in;
 import com.bankary.cuenta.application.exception.ConflictException;
 import com.bankary.cuenta.application.exception.ResourceNotFoundException;
 import com.bankary.cuenta.application.exception.SaldoInsuficienteException;
+import com.bankary.cuenta.domain.exception.CuentaDuplicadaException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(ConflictException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(CuentaDuplicadaException.class)
+    public ResponseEntity<ErrorResponse> handleCuentaDuplicada(CuentaDuplicadaException ex) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 

@@ -9,6 +9,7 @@ public interface CuentaRepository {
     Cuenta save(Cuenta cuenta);
     Optional<Cuenta> findById(UUID id);
     Optional<Cuenta> findByNumeroCuenta(String numeroCuenta);
+    List<Cuenta> findByClienteIdAndEstadoTrue(UUID clienteId);
     List<Cuenta> findAll();
     void deleteByNumeroCuenta(String numeroCuenta);
 }

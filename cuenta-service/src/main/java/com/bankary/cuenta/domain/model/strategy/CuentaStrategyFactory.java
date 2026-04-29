@@ -1,9 +1,9 @@
 package com.bankary.cuenta.domain.model.strategy;
 
-import com.bankary.cuenta.domain.model.Cuenta;
+import com.bankary.cuenta.domain.model.TipoCuenta;
 
 public class CuentaStrategyFactory {
-    public static CuentaStrategy getStrategy(Cuenta.TipoCuenta tipoCuenta) {
+    public static CuentaStrategy getStrategy(TipoCuenta tipoCuenta) {
         return switch (tipoCuenta) {
             case AHORRO -> new AhorroStrategy();
             case CORRIENTE -> new CorrienteStrategy();

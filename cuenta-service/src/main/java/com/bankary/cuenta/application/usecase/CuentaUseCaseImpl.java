@@ -2,6 +2,7 @@ package com.bankary.cuenta.application.usecase;
 
 import com.bankary.cuenta.application.exception.ConflictException;
 import com.bankary.cuenta.application.exception.ResourceNotFoundException;
+import com.bankary.cuenta.domain.CuentaLimiteValidator;
 import com.bankary.cuenta.domain.model.Cuenta;
 import com.bankary.cuenta.domain.port.in.CuentaUseCase;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
@@ -28,6 +29,10 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
 
         clienteSnapshotRepository.findById(cuenta.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("El cliente con ID " + cuenta.getClienteId() + " no existe o aun no ha sido sincronizado"));
+
+        // Validar límite de cuentas por tipo
+        List<Cuenta> cuentasActivas = cuentaRepository.findByClienteIdAndEstadoTrue(cuenta.getClienteId());
+        CuentaLimiteValidator.validarLimitePorTipo(cuenta.getTipoCuenta(), cuentasActivas);
 
         if (cuenta.getId() == null) {
             cuenta.setId(UUID.randomUUID());
