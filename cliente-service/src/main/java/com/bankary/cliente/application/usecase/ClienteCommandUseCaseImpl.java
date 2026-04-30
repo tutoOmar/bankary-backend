@@ -40,17 +40,18 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
             throw new ConflictException("Ya existe un cliente con el documento dado");
         }
 
-        Cliente cliente = new Cliente();
-        cliente.setClienteId(UUID.randomUUID());
-        cliente.setNombre(command.getNombre());
-        cliente.setGenero(command.getGenero());
-        cliente.setEdad(command.getEdad());
-        cliente.setTipoDocumento(command.getTipoDocumento());
-        cliente.setNumeroDocumento(command.getNumeroDocumento());
-        cliente.setDireccion(command.getDireccion());
-        cliente.setTelefono(command.getTelefono());
-        cliente.setContrasena(passwordEncoder.encode(command.getContrasena()));
-        cliente.setEstado(true);
+        Cliente cliente = Cliente.builder()
+                .clienteId(UUID.randomUUID())
+                .nombre(command.getNombre())
+                .genero(command.getGenero())
+                .edad(command.getEdad())
+                .tipoDocumento(command.getTipoDocumento())
+                .numeroDocumento(command.getNumeroDocumento())
+                .direccion(command.getDireccion())
+                .telefono(command.getTelefono())
+                .contrasena(passwordEncoder.encode(command.getContrasena()))
+                .estado(true)
+                .build();
 
         Cliente saved = clienteRepository.save(cliente);
         log.info("Cliente persistido exitosamente | id={} | nombre={}", saved.getClienteId(), saved.getNombre());
@@ -88,16 +89,16 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
             }
         }
 
-        cliente.setNombre(command.getNombre());
-        cliente.setGenero(command.getGenero());
-        cliente.setEdad(command.getEdad());
-        cliente.setTipoDocumento(command.getTipoDocumento());
-        cliente.setNumeroDocumento(command.getNumeroDocumento());
-        cliente.setDireccion(command.getDireccion());
-        cliente.setTelefono(command.getTelefono());
-        if (command.getContrasena() != null && !command.getContrasena().isBlank()) {
-            cliente.setContrasena(passwordEncoder.encode(command.getContrasena()));
-        }
+        cliente.updateDetails(
+                command.getNombre(),
+                command.getGenero(),
+                command.getEdad(),
+                command.getTipoDocumento(),
+                command.getNumeroDocumento(),
+                command.getDireccion(),
+                command.getTelefono(),
+                (command.getContrasena() != null && !command.getContrasena().isBlank()) ? passwordEncoder.encode(command.getContrasena()) : null
+        );
 
         Cliente updated = clienteRepository.save(cliente);
         log.info("Cliente actualizado exitosamente | id={}", updated.getClienteId());
@@ -122,7 +123,7 @@ public class ClienteCommandUseCaseImpl implements ClienteCommandUseCase {
                     log.warn("Cliente no encontrado para eliminación | id={}", clienteId);
                     return new ResourceNotFoundException("Cliente no encontrado");
                 });
-        cliente.setEstado(false);
+        cliente.deactivate();
         clienteRepository.save(cliente);
         log.info("Cliente marcado como inactivo | id={}", clienteId);
     }

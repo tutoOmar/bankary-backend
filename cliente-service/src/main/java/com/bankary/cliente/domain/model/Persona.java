@@ -1,11 +1,15 @@
 package com.bankary.cliente.domain.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
@@ -31,5 +35,16 @@ public class Persona {
         if (numeroDocumento == null || numeroDocumento.isBlank()) {
             throw new IllegalArgumentException("El numero de documento es obligatorio");
         }
+    }
+
+    public void updateInfo(String nombre, String genero, Integer edad, TipoDocumento tipoDocumento, String numeroDocumento, String direccion, String telefono) {
+        this.nombre = nombre;
+        this.genero = genero;
+        this.edad = edad;
+        this.tipoDocumento = tipoDocumento;
+        this.numeroDocumento = numeroDocumento;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        validate();
     }
 }

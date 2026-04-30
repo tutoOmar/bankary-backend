@@ -61,11 +61,7 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
             throw e;
         }
 
-        if (cuenta.getId() == null) {
-            cuenta.setId(UUID.randomUUID());
-        }
-        cuenta.setSaldoDisponible(cuenta.getSaldoInicial());
-        cuenta.setEstado(true);
+        cuenta.initialize();
         
         Cuenta saved = cuentaRepository.save(cuenta);
         log.info("Cuenta creada exitosamente | id={} | numeroCuenta={}", saved.getId(), saved.getNumeroCuenta());
@@ -81,8 +77,8 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
                     return new ResourceNotFoundException("Cuenta no encontrada");
                 });
         
-        existing.setTipoCuenta(cuenta.getTipoCuenta());
-        existing.setEstado(cuenta.isEstado());
+        existing.cambiarTipo(cuenta.getTipoCuenta());
+        existing.cambiarEstado(cuenta.isEstado());
         
         Cuenta updated = cuentaRepository.save(existing);
         log.info("Cuenta actualizada exitosamente | id={}", updated.getId());

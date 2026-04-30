@@ -61,7 +61,7 @@ class ClienteQueryUseCaseImplTest {
     @DisplayName("getById: Inactive client throws ResourceNotFoundException")
     void getById_Inactivo_LanzaResourceNotFoundException() {
         // Arrange
-        cliente.setEstado(false);
+        cliente.deactivate();
         when(clienteReader.findById(clienteId)).thenReturn(Optional.of(cliente));
 
         // Act & Assert

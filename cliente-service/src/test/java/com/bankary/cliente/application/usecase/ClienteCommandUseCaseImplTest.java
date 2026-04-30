@@ -82,6 +82,7 @@ class ClienteCommandUseCaseImplTest {
         @DisplayName("Resilience: Should not fail if Event Publisher throws Exception")
         void create_eventPublisherFailure_shouldStillSucceed() {
             CreateClienteCommand command = CreateClienteCommand.builder()
+                    .nombre("Juan Perez")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("1023456789")
                     .edad(30)
@@ -99,6 +100,7 @@ class ClienteCommandUseCaseImplTest {
         @DisplayName("Conflict: Should throw exception if client already exists")
         void create_duplicateClient_shouldThrowConflict() {
             CreateClienteCommand command = CreateClienteCommand.builder()
+                    .nombre("Juan Perez")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("12345678")
                     .edad(25)
@@ -127,6 +129,7 @@ class ClienteCommandUseCaseImplTest {
 
             Cliente existing = Cliente.builder()
                     .clienteId(clientId)
+                    .nombre("Juan Perez")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("11111111")
                     .build();
@@ -154,6 +157,7 @@ class ClienteCommandUseCaseImplTest {
 
             Cliente existing = Cliente.builder()
                     .clienteId(clientId)
+                    .nombre("Juan Perez")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("11111111")
                     .build();
@@ -171,6 +175,7 @@ class ClienteCommandUseCaseImplTest {
         void update_eventPublisherFailure_shouldStillSucceed() {
             UUID clientId = UUID.randomUUID();
             UpdateClienteCommand command = UpdateClienteCommand.builder()
+                    .nombre("Updated Name")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("11111111")
                     .edad(30)
@@ -178,6 +183,7 @@ class ClienteCommandUseCaseImplTest {
 
             Cliente existing = Cliente.builder()
                     .clienteId(clientId)
+                    .nombre("Juan Perez")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("11111111")
                     .build();
@@ -203,6 +209,7 @@ class ClienteCommandUseCaseImplTest {
         void update_conflictIdentification() {
             UUID clientId = UUID.randomUUID();
             UpdateClienteCommand command = UpdateClienteCommand.builder()
+                    .nombre("New Name")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("99999999") // New ID
                     .edad(30)
@@ -210,6 +217,7 @@ class ClienteCommandUseCaseImplTest {
 
             Cliente existingInDb = Cliente.builder()
                     .clienteId(clientId)
+                    .nombre("Juan Perez")
                     .tipoDocumento(TipoDocumento.CC)
                     .numeroDocumento("11111111") // Current ID
                     .build();

@@ -37,7 +37,7 @@ Cada microservicio sigue el patrón de Arquitectura Hexagonal para desacoplar la
 - **Arquitectura Hexagonal**: Se eligió para facilitar la testabilidad. La lógica de negocio se prueba con JUnit puro sin necesidad de levantar bases de datos o contextos pesados.
 - **Microservicios Independientes**: Cada servicio es un proyecto Maven autónomo con su propio ciclo de vida, facilitando el escalamiento independiente.
 - **Estrategia de Persistencia**: Uso de PostgreSQL para asegurar consistencia ACID. El esquema se gestiona mediante scripts SQL en la carpeta `/sql` del monorepo.
-- **Patrón Strategy**: Utilizado en `cuenta-service` para validar los retiros según el tipo de cuenta (Ahorro vs Corriente), permitiendo extender nuevas reglas de negocio sin modificar el caso de uso principal (OCP).
+- **Patrón Strategy**: Utilizado en `cuenta-service` para validar los retiros según el tipo de cuenta (Ahorro vs Corriente), permitiendo extender nuevas reglas de negocio sin modificar el caso de uso principal (OCP). También implementado en `cuenta-service` principalmente en los tipos de documento de indentidad y permitiendo agregar futuros tipos de documentos sin complicación. 
 
 ## 4. Modelo de Datos
 

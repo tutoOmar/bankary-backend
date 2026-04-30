@@ -56,12 +56,10 @@ public class MovimientoUseCaseImpl implements MovimientoUseCase {
             log.debug("Procesando retiro | saldoAnterior={} | nuevoSaldo={}", cuenta.getSaldoDisponible(), nuevoSaldo);
         }
 
-        cuenta.setSaldoDisponible(nuevoSaldo);
+        cuenta.actualizarSaldo(nuevoSaldo);
         cuentaRepository.save(cuenta);
 
-        movimiento.setFecha(Instant.now());
-        movimiento.setSaldo(nuevoSaldo);
-        movimiento.setCuentaId(cuenta.getId());
+        movimiento.registrar(nuevoSaldo, cuenta.getId());
         
         Movimiento saved = movimientoRepository.save(movimiento);
         log.info("Movimiento registrado exitosamente | id={} | nuevoSaldo={}", saved.getId(), nuevoSaldo);

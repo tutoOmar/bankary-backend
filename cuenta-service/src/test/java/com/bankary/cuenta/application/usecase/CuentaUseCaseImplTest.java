@@ -36,6 +36,9 @@ class CuentaUseCaseImplTest {
     @Mock
     private ClienteSnapshotRepository clienteSnapshotRepository;
 
+    @Mock
+    private com.bankary.cuenta.domain.port.out.ClienteExternalServicePort clienteExternalServicePort;
+
     @InjectMocks
     private CuentaUseCaseImpl useCase;
 
