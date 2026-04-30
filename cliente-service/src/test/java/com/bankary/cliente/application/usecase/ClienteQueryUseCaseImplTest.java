@@ -3,7 +3,7 @@ package com.bankary.cliente.application.usecase;
 import com.bankary.cliente.application.dto.ClienteResponse;
 import com.bankary.cliente.application.exception.ResourceNotFoundException;
 import com.bankary.cliente.domain.model.Cliente;
-import com.bankary.cliente.domain.port.out.ClienteRepository;
+import com.bankary.cliente.domain.port.out.ClienteReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class ClienteQueryUseCaseImplTest {
 
     @Mock
-    private ClienteRepository clienteRepository;
+    private ClienteReader clienteReader;
 
     @InjectMocks
     private ClienteQueryUseCaseImpl useCase;
@@ -46,7 +46,7 @@ class ClienteQueryUseCaseImplTest {
     @DisplayName("getById: Happy Path")
     void getById_Exitoso() {
         // Arrange
-        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+        when(clienteReader.findById(clienteId)).thenReturn(Optional.of(cliente));
 
         // Act
         ClienteResponse result = useCase.getById(clienteId);
@@ -62,7 +62,7 @@ class ClienteQueryUseCaseImplTest {
     void getById_Inactivo_LanzaResourceNotFoundException() {
         // Arrange
         cliente.setEstado(false);
-        when(clienteRepository.findById(clienteId)).thenReturn(Optional.of(cliente));
+        when(clienteReader.findById(clienteId)).thenReturn(Optional.of(cliente));
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> useCase.getById(clienteId));
@@ -72,7 +72,7 @@ class ClienteQueryUseCaseImplTest {
     @DisplayName("getById: Not found throws ResourceNotFoundException")
     void getById_NoEncontrado_LanzaResourceNotFoundException() {
         // Arrange
-        when(clienteRepository.findById(clienteId)).thenReturn(Optional.empty());
+        when(clienteReader.findById(clienteId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, () -> useCase.getById(clienteId));
@@ -82,7 +82,7 @@ class ClienteQueryUseCaseImplTest {
     @DisplayName("list: Happy Path")
     void list_Exitoso() {
         // Arrange
-        when(clienteRepository.findAllActivos()).thenReturn(List.of(cliente));
+        when(clienteReader.findAllActivos()).thenReturn(List.of(cliente));
 
         // Act
         List<ClienteResponse> result = useCase.list();

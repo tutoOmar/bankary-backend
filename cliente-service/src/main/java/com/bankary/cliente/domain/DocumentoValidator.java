@@ -2,6 +2,8 @@ package com.bankary.cliente.domain;
 
 import com.bankary.cliente.domain.exception.DocumentoInvalidoException;
 import com.bankary.cliente.domain.model.TipoDocumento;
+import com.bankary.cliente.domain.validation.DocumentoValidationStrategy;
+import com.bankary.cliente.domain.validation.DocumentoValidatorRegistry;
 
 public class DocumentoValidator {
 
@@ -13,8 +15,8 @@ public class DocumentoValidator {
             throw new DocumentoInvalidoException("El numero de documento es obligatorio");
         }
 
-        // Delegación basada en estrategia (SOLID: OCP)
-        tipo.validateFormat(numero);
-        tipo.validateEdad(edad);
+        DocumentoValidationStrategy strategy = DocumentoValidatorRegistry.getStrategy(tipo);
+        strategy.validateFormat(numero);
+        strategy.validateEdad(edad);
     }
 }

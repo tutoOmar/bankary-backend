@@ -5,7 +5,7 @@ import com.bankary.cliente.application.exception.ResourceNotFoundException;
 import com.bankary.cliente.application.mapper.ClienteMapper;
 import com.bankary.cliente.domain.model.Cliente;
 import com.bankary.cliente.domain.port.in.ClienteQueryUseCase;
-import com.bankary.cliente.domain.port.out.ClienteRepository;
+import com.bankary.cliente.domain.port.out.ClienteReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,12 +17,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClienteQueryUseCaseImpl implements ClienteQueryUseCase {
 
-    private final ClienteRepository clienteRepository;
+    private final ClienteReader clienteReader;
 
     @Override
     public ClienteResponse getById(UUID clienteId) {
         log.debug("Consultando cliente por id={}", clienteId);
-        Cliente cliente = clienteRepository.findById(clienteId)
+        Cliente cliente = clienteReader.findById(clienteId)
                 .filter(Cliente::isEstado)
                 .orElseThrow(() -> {
                     log.warn("Consulta fallida: cliente no encontrado o inactivo | id={}", clienteId);
@@ -34,7 +34,7 @@ public class ClienteQueryUseCaseImpl implements ClienteQueryUseCase {
     @Override
     public List<ClienteResponse> list() {
         log.debug("Listando todos los clientes activos");
-        return clienteRepository.findAllActivos().stream()
+        return clienteReader.findAllActivos().stream()
                 .map(ClienteMapper::toResponse)
                 .collect(Collectors.toList());
     }
