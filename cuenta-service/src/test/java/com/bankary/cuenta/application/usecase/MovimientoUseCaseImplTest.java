@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -137,6 +138,24 @@ class MovimientoUseCaseImplTest {
     }
 
     @Test
+    void registrarMovimiento_RetiroCorriente_Exitoso() {
+        // Arrange
+        String numero = "123";
+        Movimiento mov = Movimiento.builder().tipoMovimiento(Movimiento.TipoMovimiento.RETIRO).valor(new BigDecimal("500")).build();
+        Cuenta cuentaCorriente = Cuenta.builder().numeroCuenta(numero).saldoDisponible(new BigDecimal("1000")).tipoCuenta(TipoCuenta.CORRIENTE).build();
+
+        when(cuentaRepository.findByNumeroCuenta(numero)).thenReturn(Optional.of(cuentaCorriente));
+        when(movimientoRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
+        Movimiento result = useCase.registrarMovimiento(numero, mov);
+
+        // Assert
+        assertEquals(new BigDecimal("500"), result.getSaldo());
+        verify(cuentaRepository).save(any());
+    }
+
+    @Test
     void registrarMovimiento_CuentaNoExiste_LanzaExcepcion() {
         // Arrange
         Movimiento movimiento = Movimiento.builder().build();
@@ -145,5 +164,25 @@ class MovimientoUseCaseImplTest {
         // Act & Assert
         assertThrows(ResourceNotFoundException.class, 
             () -> useCase.registrarMovimiento("999", movimiento));
+    }
+
+    @Test
+    void list_Exitoso() {
+        when(movimientoRepository.findAll()).thenReturn(List.of(new Movimiento()));
+        assertFalse(useCase.list().isEmpty());
+    }
+
+    @Test
+    void getById_Exitoso() {
+        UUID id = UUID.randomUUID();
+        when(movimientoRepository.findById(id)).thenReturn(Optional.of(new Movimiento()));
+        assertNotNull(useCase.getById(id));
+    }
+
+    @Test
+    void getById_NoEncontrado_LanzaExcepcion() {
+        UUID id = UUID.randomUUID();
+        when(movimientoRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> useCase.getById(id));
     }
 }

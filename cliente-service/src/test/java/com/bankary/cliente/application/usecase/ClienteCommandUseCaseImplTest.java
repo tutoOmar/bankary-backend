@@ -95,11 +95,109 @@ class ClienteCommandUseCaseImplTest {
             assertDoesNotThrow(() -> clienteCommandUseCase.create(command));
             verify(clienteRepository).save(any());
         }
+        @Test
+        @DisplayName("Conflict: Should throw exception if client already exists")
+        void create_duplicateClient_shouldThrowConflict() {
+            CreateClienteCommand command = CreateClienteCommand.builder()
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("12345678")
+                    .edad(25)
+                    .build();
+
+            when(clienteRepository.findByDocumento(any(), any())).thenReturn(Optional.of(new Cliente()));
+
+            assertThrows(ConflictException.class, () -> clienteCommandUseCase.create(command));
+        }
     }
 
     @Nested
     @DisplayName("Update Cliente Scenarios")
     class UpdateScenarios {
+        @Test
+        @DisplayName("Success: Should update client and publish event")
+        void update_success() {
+            UUID clientId = UUID.randomUUID();
+            UpdateClienteCommand command = UpdateClienteCommand.builder()
+                    .nombre("Updated Name")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .edad(30)
+                    .contrasena("newPass")
+                    .build();
+
+            Cliente existing = Cliente.builder()
+                    .clienteId(clientId)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .build();
+
+            when(clienteRepository.findById(clientId)).thenReturn(Optional.of(existing));
+            when(passwordEncoder.encode("newPass")).thenReturn("hashedNewPass");
+            when(clienteRepository.save(any())).thenReturn(existing);
+
+            clienteCommandUseCase.update(clientId, command);
+
+            verify(clienteRepository).save(any());
+            verify(eventPublisher).publishClienteActualizado(any());
+        }
+
+        @Test
+        @DisplayName("Success: Should update client WITHOUT changing document")
+        void update_noDocumentChange() {
+            UUID clientId = UUID.randomUUID();
+            UpdateClienteCommand command = UpdateClienteCommand.builder()
+                    .nombre("Updated Name")
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .edad(30)
+                    .build();
+
+            Cliente existing = Cliente.builder()
+                    .clienteId(clientId)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .build();
+
+            when(clienteRepository.findById(clientId)).thenReturn(Optional.of(existing));
+            when(clienteRepository.save(any())).thenReturn(existing);
+
+            clienteCommandUseCase.update(clientId, command);
+
+            verify(clienteRepository, never()).findByDocumento(any(), any());
+        }
+
+        @Test
+        @DisplayName("Resilience: Should not fail if Event Publisher throws Exception on update")
+        void update_eventPublisherFailure_shouldStillSucceed() {
+            UUID clientId = UUID.randomUUID();
+            UpdateClienteCommand command = UpdateClienteCommand.builder()
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .edad(30)
+                    .build();
+
+            Cliente existing = Cliente.builder()
+                    .clienteId(clientId)
+                    .tipoDocumento(TipoDocumento.CC)
+                    .numeroDocumento("11111111")
+                    .build();
+
+            when(clienteRepository.findById(clientId)).thenReturn(Optional.of(existing));
+            when(clienteRepository.save(any())).thenReturn(existing);
+            doThrow(new RuntimeException("Rabbit down")).when(eventPublisher).publishClienteActualizado(any());
+
+            assertDoesNotThrow(() -> clienteCommandUseCase.update(clientId, command));
+        }
+
+        @Test
+        @DisplayName("Not Found: Should throw exception if client doesn't exist")
+        void update_notFound_shouldThrowException() {
+            UUID clientId = UUID.randomUUID();
+            when(clienteRepository.findById(clientId)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> clienteCommandUseCase.update(clientId, new UpdateClienteCommand()));
+        }
+
         @Test
         @DisplayName("Conflict: Should throw exception if new identification belongs to another client")
         void update_conflictIdentification() {
@@ -150,11 +248,37 @@ class ClienteCommandUseCaseImplTest {
             when(clienteRepository.findById(clientId)).thenReturn(Optional.of(existing));
             when(clienteRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-            ClienteResponse response = clienteCommandUseCase.update(clientId, command);
+            clienteCommandUseCase.update(clientId, command);
 
             verify(passwordEncoder, never()).encode(anyString());
-            // In the real impl, it should keep the old one. We check repo save call.
             verify(clienteRepository).save(argThat(c -> c.getContrasena().equals("oldHashedPassword")));
+        }
+    }
+
+    @Nested
+    @DisplayName("Delete Cliente Scenarios")
+    class DeleteScenarios {
+        @Test
+        @DisplayName("Success: Should perform soft delete")
+        void delete_success() {
+            UUID clientId = UUID.randomUUID();
+            Cliente existing = Cliente.builder().clienteId(clientId).estado(true).build();
+
+            when(clienteRepository.findById(clientId)).thenReturn(Optional.of(existing));
+
+            clienteCommandUseCase.delete(clientId);
+
+            assertFalse(existing.isEstado());
+            verify(clienteRepository).save(existing);
+        }
+
+        @Test
+        @DisplayName("Not Found: Should throw exception")
+        void delete_notFound_shouldThrowException() {
+            UUID clientId = UUID.randomUUID();
+            when(clienteRepository.findById(clientId)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> clienteCommandUseCase.delete(clientId));
         }
     }
 }

@@ -7,3 +7,9 @@
 3. Enviroments crearlas y proteger las variables
 4. Test unitarios y de integración probarlos
 5. Revisar Readmes todos
+
+
+
+Importante
+
+7. Si un usuario no está en la snapshot se debe primero consultar al cliente service antes descartarlo
