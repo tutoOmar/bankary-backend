@@ -7,6 +7,7 @@ import com.bankary.cuenta.domain.model.Cuenta;
 import com.bankary.cuenta.domain.port.in.CuentaUseCase;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import com.bankary.cuenta.domain.port.out.ClienteSnapshotRepository;
+import com.bankary.cuenta.domain.port.out.ClienteExternalServicePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
 
     private final CuentaRepository cuentaRepository;
     private final ClienteSnapshotRepository clienteSnapshotRepository;
+    private final ClienteExternalServicePort clienteExternalServicePort;
 
     @Override
     public Cuenta create(Cuenta cuenta) {
@@ -33,11 +35,21 @@ public class CuentaUseCaseImpl implements CuentaUseCase {
                     throw new ConflictException("Ya existe una cuenta con el numero " + cuenta.getNumeroCuenta());
                 });
 
-        clienteSnapshotRepository.findById(cuenta.getClienteId())
-                .orElseThrow(() -> {
-                    log.error("Cliente no encontrado en snapshot | clienteId={}", cuenta.getClienteId());
-                    return new ResourceNotFoundException("El cliente con ID " + cuenta.getClienteId() + " no existe o aun no ha sido sincronizado");
-                });
+        // Sincronización perezosa si el cliente no existe localmente
+        if (clienteSnapshotRepository.findById(cuenta.getClienteId()).isEmpty()) {
+            log.info("Cliente no encontrado localmente, consultando servicio externo | clienteId={}", cuenta.getClienteId());
+            clienteExternalServicePort.findClienteById(cuenta.getClienteId())
+                    .ifPresentOrElse(
+                        snapshot -> {
+                            log.info("Cliente encontrado en servicio externo, sincronizando snapshot | clienteId={}", cuenta.getClienteId());
+                            clienteSnapshotRepository.save(snapshot);
+                        },
+                        () -> {
+                            log.error("Cliente no encontrado en ningún servicio | clienteId={}", cuenta.getClienteId());
+                            throw new ResourceNotFoundException("El cliente con ID " + cuenta.getClienteId() + " no existe en el sistema");
+                        }
+                    );
+        }
 
         // Validar límite de cuentas por tipo
         List<Cuenta> cuentasActivas = cuentaRepository.findByClienteIdAndEstadoTrue(cuenta.getClienteId());
