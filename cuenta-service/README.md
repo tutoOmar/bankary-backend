@@ -1,85 +1,64 @@
-# Cuenta Service
+# Cuenta Service — Bankary
 
-El **Cuenta Service** es un microservicio del proyecto **Bankary** encargado de la gestión de cuentas bancarias, los movimientos (depósitos y retiros) asociados a estas y la generación de reportes de estado de cuenta. Está construido siguiendo los principios de la Arquitectura Hexagonal y se comunica asíncronamente con otros servicios mediante RabbitMQ.
+Servicio encargado de la gestión de cuentas bancarias, procesamiento de movimientos (depósitos/retiros) y generación de reportes de estado de cuenta.
 
-## 🚀 Tecnologías Principales
-- Java 21
-- Spring Boot
-- Arquitectura Hexagonal
-- RabbitMQ (para consumo de eventos de clientes)
+## Responsabilidades
+- Creación y administración de cuentas de ahorro y corrientes.
+- Validación de saldos disponibles según el tipo de cuenta.
+- Registro histórico de movimientos contables.
+- Sincronización de información de clientes vía eventos de RabbitMQ.
+- Generación de reportes dinámicos por rango de fechas.
 
----
+## Variables de Entorno Requeridas
 
-## 🌐 Endpoints
+| Variable | Descripción | Ejemplo |
+| :--- | :--- | :--- |
+| `DB_URL` | URL de conexión a PostgreSQL | `jdbc:postgresql://localhost:5433/cuenta_db` |
+| `DB_USERNAME` | Usuario de la base de datos | `postgres` |
+| `DB_PASSWORD` | Contraseña de la base de datos | `secret` |
+| `SERVER_PORT` | Puerto de escucha del servicio | `8081` |
+| `CLIENTE_SERVICE_URL` | URL base para llamadas al cliente-service | `http://localhost:8080` |
+| `RABBITMQ_HOST` | Host del broker de mensajería | `localhost` |
 
-La base de las URLs dependerá del recurso al que quieras acceder. Existen tres controladores principales:
+## Endpoints Principales
 
-### 1. Gestión de Cuentas (`/api/v1/cuentas`)
+| Método | Ruta | Descripción |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/cuentas` | Crear una nueva cuenta |
+| `GET` | `/api/v1/cuentas` | Listar todas las cuentas |
+| `POST` | `/api/v1/movimientos` | Registrar un depósito o retiro |
+| `GET` | `/api/v1/movimientos` | Consultar historial de movimientos |
+| `GET` | `/api/v1/reportes` | Generar estado de cuenta por fecha |
+| `GET` | `/actuator/health` | Estado de salud del servicio |
 
-#### Crear Cuenta
-- **Ruta:** `POST /api/v1/cuentas`
-- **Descripción:** Crea una nueva cuenta bancaria para un cliente existente.
-- **Request Body (CuentaRequest):**
-  ```json
-  {
-    "numeroCuenta": "478758",
-    "tipoCuenta": "AHORRO",
-    "saldoInicial": 2000.00,
-    "clienteId": "UUID-DEL-CLIENTE"
-  }
-  ```
-  *(Nota: `tipoCuenta` puede ser `AHORRO` o `CORRIENTE`)*
+## Cómo Levantar el Servicio
 
-#### Listar Cuentas
-- **Ruta:** `GET /api/v1/cuentas`
-- **Descripción:** Obtiene una lista de todas las cuentas registradas.
+### Usando Maven
+```bash
+mvn spring-boot:run
+```
 
-#### Obtener Cuenta por Número
-- **Ruta:** `GET /api/v1/cuentas/{numeroCuenta}`
-- **Descripción:** Obtiene los detalles de una cuenta específica utilizando su número de cuenta.
+### Ejecutando el JAR
+```bash
+mvn clean package -DskipTests
+java -jar target/cuenta-service-0.0.1-SNAPSHOT.jar
+```
 
-#### Actualizar Cuenta
-- **Ruta:** `PUT /api/v1/cuentas/{numeroCuenta}`
-- **Descripción:** Actualiza los datos de una cuenta existente.
+## Tests y Cobertura
+El servicio cuenta con tests unitarios, de integración y validaciones de patrones de diseño (Strategy).
 
-#### Eliminar Cuenta
-- **Ruta:** `DELETE /api/v1/cuentas/{numeroCuenta}`
-- **Descripción:** Elimina una cuenta específica.
+```bash
+# Ejecutar suite de pruebas
+mvn verify -Dtest=!*IntegrationTest
 
----
+# Ver reporte de cobertura
+# Abrir target/site/jacoco/index.html en el navegador
+```
 
-### 2. Gestión de Movimientos (`/api/v1/movimientos`)
-
-#### Registrar Movimiento
-- **Ruta:** `POST /api/v1/movimientos`
-- **Descripción:** Registra un nuevo movimiento (depósito o retiro) en una cuenta específica. Valida que haya saldo suficiente en caso de retiro.
-- **Request Body (MovimientoRequest):**
-  ```json
-  {
-    "numeroCuenta": "478758",
-    "tipoMovimiento": "RETIRO",
-    "valor": 150.00
-  }
-  ```
-  *(Nota: `tipoMovimiento` puede ser `DEPOSITO` o `RETIRO`. El `valor` debe ser un número positivo).*
-
-#### Listar Movimientos
-- **Ruta:** `GET /api/v1/movimientos`
-- **Descripción:** Obtiene una lista de todos los movimientos.
-
-#### Obtener Movimiento por ID
-- **Ruta:** `GET /api/v1/movimientos/{id}`
-- **Descripción:** Obtiene los detalles de un movimiento utilizando su UUID.
-
----
-
-### 3. Reportes (`/api/v1/reportes`)
-
-#### Generar Reporte de Estado de Cuenta
-- **Ruta:** `GET /api/v1/reportes`
-- **Descripción:** Genera un estado de cuenta detallado para un cliente en un rango de fechas.
-- **Parámetros de Consulta (Query Params):**
-  - `fechaInicio` (formato `YYYY-MM-DD`)
-  - `fechaFin` (formato `YYYY-MM-DD`)
-  - `clienteId` (UUID)
-- **Ejemplo:** `/api/v1/reportes?fechaInicio=2024-04-01&fechaFin=2024-04-30&clienteId=UUID-DEL-CLIENTE`
+## Estructura de Paquetes
+```text
+src/main/java/com/bankary/cuenta/
+├── domain/            # Lógica: Entidades, Estrategias de Validación, Puertos
+├── application/       # Casos de Uso y DTOs
+└── infrastructure/    # Adaptadores: Controllers, Repositories, Client API
+```
