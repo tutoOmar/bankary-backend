@@ -2,6 +2,7 @@ package com.bankary.cliente.infrastructure.adapter.in;
 
 import com.bankary.cliente.application.exception.ConflictException;
 import com.bankary.cliente.application.exception.ResourceNotFoundException;
+import com.bankary.cliente.domain.exception.DocumentoInvalidoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,5 +53,31 @@ class GlobalExceptionHandlerTest {
         public void throwConflict() {
             throw new ConflictException("Data conflict");
         }
+
+        @GetMapping("/test/bad-request")
+        public void throwDocumentoInvalido() {
+            throw new DocumentoInvalidoException("Invalid document");
+        }
+
+        @GetMapping("/test/error")
+        public void throwGeneric() {
+            throw new RuntimeException("Unexpected error");
+        }
+    }
+
+    @Test
+    @DisplayName("Should return 400 when DocumentoInvalidoException is thrown")
+    void handleDocumentoInvalido() throws Exception {
+        mockMvc.perform(get("/test/bad-request"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Invalid document"));
+    }
+
+    @Test
+    @DisplayName("Should return 500 when generic Exception is thrown")
+    void handleGeneric() throws Exception {
+        mockMvc.perform(get("/test/error"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Ha ocurrido un error inesperado en el servidor"));
     }
 }
