@@ -1,6 +1,6 @@
 ---
 id: SPEC-002
-status: APPROVED
+status: IMPLEMENTED
 feature: cuenta-service
 created: 2026-04-28
 updated: 2026-04-28
@@ -170,6 +170,11 @@ Formato de respuesta por cada registro:
 - Usar transacciones para update cuenta + insert movimiento.
 - Validar concurrencia: version manual en entidad y 409 en conflicto si aplica.
 - Exponer excepciones de dominio con códigos HTTP claros.
+
+### Stack Tecnológico
+- **Build Tool**: Maven (pom.xml)
+- **Getters/Setters**: Lombok (`@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Data`) — reduce boilerplate en DTOs y entidades.
+- **Lombok Configuration**: agregar `<plugin>` en pom.xml y `@java.beans.ConstructorProperties` si es necesario para compatibilidad con frameworks.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 id: SPEC-003
-status: APPROVED
+status: IMPLEMENTED
 feature: docker-compose
 created: 2026-04-28
 updated: 2026-04-28
@@ -19,7 +19,7 @@ Levantar localmente:
 - PostgreSQL para cuenta-service (puerto 5433)
 - RabbitMQ con management UI (puertos 5672 y 15672)
 - Red interna compartida entre servicios
-- Gradle build para cada servicio, Dockerfile por servicio
+- Maven build para cada servicio, Dockerfile por servicio
 
 ## 2. DISEÑO / CONFIGURACIÓN RECOMENDADA
 
@@ -110,8 +110,8 @@ Network:
 ## 3. LISTA DE TAREAS / CHECKS
 - [ ] Crear docker-compose.yml en la raíz con la configuración anterior
 - [ ] Crear Dockerfile multi-stage en cada servicio con esta estructura:
-    - Stage 1 (build): image `gradle:8-jdk17`, copiar fuentes, ejecutar `gradle bootJar`
-    - Stage 2 (runtime): image `eclipse-temurin:17-jre-alpine`, copiar JAR del stage 1, `EXPOSE` del puerto correspondiente, `ENTRYPOINT ["java","-jar","app.jar"]`
+    - Stage 1 (build): image `maven:3.9-eclipse-temurin-17`, copiar fuentes, ejecutar `mvn clean package -DskipTests`
+    - Stage 2 (runtime): image `eclipse-temurin:17-jre-alpine`, copiar JAR del stage 1 (usualmente en `target/*.jar`), `EXPOSE` del puerto correspondiente, `ENTRYPOINT ["java","-jar","app.jar"]`
     - Usar Alpine en runtime para imagen final liviana (~180MB vs ~600MB full JDK)
 - [ ] Comprobar variables de entorno y application.yml para perfiles docker/local
 - [ ] Añadir scripts de inicialización SQL si requiere seed (BaseDatos.sql)

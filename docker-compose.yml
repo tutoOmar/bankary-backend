@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pruebatecnica-net
+
+  postgres-cliente:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${CLIENTE_DB_NAME:-cliente_db}
+      POSTGRES_USER: ${DB_USERNAME:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-user} -d ${CLIENTE_DB_NAME:-cliente_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - cliente-db-data:/var/lib/postgresql/data
+      - ./sql/cliente:/docker-entrypoint-initdb.d
+    networks:
+      - pruebatecnica-net
+
+  postgres-cuenta:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${CUENTA_DB_NAME:-cuenta_db}
+      POSTGRES_USER: ${DB_USERNAME:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-pass}
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-user} -d ${CUENTA_DB_NAME:-cuenta_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - cuenta-db-data:/var/lib/postgresql/data
+      - ./sql/cuenta:/docker-entrypoint-initdb.d
+    networks:
+      - pruebatecnica-net
+
+  cliente-service:
+    build:
+      context: ./cliente-service
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_URL=${CLIENTE_DB_URL:-jdbc:postgresql://postgres-cliente:5432/cliente_db}
+      - DB_USERNAME=${DB_USERNAME:-user}
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - RABBITMQ_HOST=rabbitmq
+      - APP_NAME=cliente-service
+      - SERVER_PORT=8080
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_LEVEL_APP=${LOG_LEVEL_APP:-INFO}
+    depends_on:
+      postgres-cliente:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - pruebatecnica-net
+
+  cuenta-service:
+    build:
+      context: ./cuenta-service
+    ports:
+      - "8081:8081"
+    restart: on-failure
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_URL=${CUENTA_DB_URL:-jdbc:postgresql://postgres-cuenta:5432/cuenta_db}
+      - DB_USERNAME=${DB_USERNAME:-user}
+      - DB_PASSWORD=${DB_PASSWORD:-pass}
+      - RABBITMQ_HOST=rabbitmq
+      - APP_NAME=cuenta-service
+      - SERVER_PORT=8081
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_LEVEL_APP=${LOG_LEVEL_APP:-INFO}
+      - CLIENTE_SERVICE_URL=${CLIENTE_SERVICE_URL:-http://cliente-service:8080}
+    depends_on:
+      postgres-cuenta:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - pruebatecnica-net
+
+volumes:
+  cliente-db-data:
+  cuenta-db-data:
+
+networks:
+  pruebatecnica-net:
+    driver: bridge
