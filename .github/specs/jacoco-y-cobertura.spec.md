@@ -1,6 +1,6 @@
 ---
 id: SPEC-008
-status: DRAF
+status: COMPLETED
 feature: jacoco-y-cobertura
 created: 2026-04-29
 updated: 2026-04-29

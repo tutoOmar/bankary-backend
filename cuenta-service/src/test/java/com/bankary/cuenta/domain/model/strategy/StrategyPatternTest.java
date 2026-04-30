@@ -30,6 +30,18 @@ class StrategyPatternTest {
     }
 
     @Test
+    void corrienteStrategy_WhenSaldoIsEnough_DoesNotThrow() {
+        CuentaStrategy strategy = new CorrienteStrategy();
+        assertDoesNotThrow(() -> strategy.validarRetiro(new BigDecimal("100"), new BigDecimal("50")));
+    }
+
+    @Test
+    void corrienteStrategy_WhenSaldoIsInsufficient_ThrowsException() {
+        CuentaStrategy strategy = new CorrienteStrategy();
+        assertThrows(SaldoInsuficienteException.class, () -> strategy.validarRetiro(new BigDecimal("100"), new BigDecimal("1000")));
+    }
+
+    @Test
     void factory_ReturnsCorrectStrategy() {
         // Just checking the factory logic
         assertNotNull(CuentaStrategyFactory.getStrategy(TipoCuenta.AHORRO));

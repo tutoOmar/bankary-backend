@@ -47,6 +47,24 @@ class DocumentoValidatorTest {
         assertEquals("Tarjeta de Identidad solo aplica para personas entre 7 y 17 años", ex.getMessage());
     }
 
+    @Test
+    @DisplayName("Validación falla si el tipo es nulo")
+    void tipoNulo() {
+        assertThrows(DocumentoInvalidoException.class, () -> DocumentoValidator.validate(null, "12345678", 20));
+    }
+
+    @Test
+    @DisplayName("Validación falla si el número es nulo")
+    void numeroNulo() {
+        assertThrows(DocumentoInvalidoException.class, () -> DocumentoValidator.validate(TipoDocumento.CC, null, 20));
+    }
+
+    @Test
+    @DisplayName("Validación falla si el número está en blanco")
+    void numeroEnBlanco() {
+        assertThrows(DocumentoInvalidoException.class, () -> DocumentoValidator.validate(TipoDocumento.CC, "  ", 20));
+    }
+
     @ParameterizedTest
     @CsvSource({
         "NIT, 123456789-0, true",
