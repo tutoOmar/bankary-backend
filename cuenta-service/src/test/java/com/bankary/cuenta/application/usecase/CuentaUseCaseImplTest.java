@@ -7,6 +7,7 @@ import com.bankary.cuenta.domain.model.ClienteSnapshot;
 import com.bankary.cuenta.domain.model.Cuenta;
 import com.bankary.cuenta.domain.model.TipoCuenta;
 import com.bankary.cuenta.domain.port.out.ClienteSnapshotRepository;
+import com.bankary.cuenta.domain.port.out.ClienteExternalServicePort;
 import com.bankary.cuenta.domain.port.out.CuentaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,6 +36,9 @@ class CuentaUseCaseImplTest {
 
     @Mock
     private ClienteSnapshotRepository clienteSnapshotRepository;
+
+    @Mock
+    private ClienteExternalServicePort clienteExternalServicePort;
 
     @InjectMocks
     private CuentaUseCaseImpl useCase;
@@ -77,10 +81,8 @@ class CuentaUseCaseImplTest {
     @Test
     @DisplayName("create: Duplicate account throws ConflictException")
     void create_CuentaDuplicada_LanzaConflictException() {
-        // Arrange
         when(cuentaRepository.findByNumeroCuenta("123456")).thenReturn(Optional.of(cuenta));
 
-        // Act & Assert
         assertThrows(ConflictException.class, () -> useCase.create(cuenta));
         verify(cuentaRepository, never()).save(any());
     }
@@ -88,11 +90,9 @@ class CuentaUseCaseImplTest {
     @Test
     @DisplayName("create: Client not found throws ResourceNotFoundException")
     void create_ClienteNoEncontrado_LanzaResourceNotFoundException() {
-        // Arrange
         when(cuentaRepository.findByNumeroCuenta(anyString())).thenReturn(Optional.empty());
         when(clienteSnapshotRepository.findById(clienteId)).thenReturn(Optional.empty());
-
-        // Act & Assert
+        when(clienteExternalServicePort.findClienteById(clienteId)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> useCase.create(cuenta));
     }
 
