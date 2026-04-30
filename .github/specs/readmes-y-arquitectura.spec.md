@@ -1,6 +1,6 @@
 ---
 id: SPEC-009
-status: DRAF
+status: IMPLEMENTED
 feature: readmes-y-arquitectura
 created: 2026-04-29
 updated: 2026-04-29
@@ -226,33 +226,33 @@ Más corto que el raíz — enfocado en ese servicio únicamente.
 ## 3. LISTA DE TAREAS
 
 ### README.md raíz
-- [ ] Revisar el proyecto completo y anotar: servicios, puertos, tecnologías usadas
-- [ ] Escribir sección de título y descripción (máximo 3 oraciones)
-- [ ] Escribir tabla de servicios con puerto y responsabilidad
-- [ ] Escribir sección de requisitos previos con versiones concretas
-- [ ] Escribir sección de configuración de entorno referenciando `.env.example`
-- [ ] Escribir sección "Cómo levantar" con comandos exactos probados
-- [ ] Escribir sección "Cómo ejecutar tests" con ruta al reporte JaCoCo
-- [ ] Escribir árbol de estructura del repositorio
-- [ ] Agregar línea de CI/CD referenciando GitHub Actions
+- [x] Revisar el proyecto completo y anotar: servicios, puertos, tecnologías usadas
+- [x] Escribir sección de título y descripción (máximo 3 oraciones)
+- [x] Escribir tabla de servicios con puerto y responsabilidad
+- [x] Escribir sección de requisitos previos con versiones concretas
+- [x] Escribir sección de configuración de entorno referenciando `.env.example`
+- [x] Escribir sección "Cómo levantar" con comandos exactos probados
+- [x] Escribir sección "Cómo ejecutar tests" con ruta al reporte JaCoCo
+- [x] Escribir árbol de estructura del repositorio
+- [x] Agregar línea de CI/CD referenciando GitHub Actions
 
 ### ARCHITECTURE.md
-- [ ] Dibujar diagrama ASCII de interacción entre servicios y bases de datos
-- [ ] Describir las tres capas de la arquitectura hexagonal con ejemplos de clases reales
-- [ ] Escribir sección de decisiones de diseño (mínimo 3 decisiones justificadas)
-- [ ] Describir modelo de datos de cliente-service (tablas persona, cliente)
-- [ ] Describir modelo de datos de cuenta-service (tablas cuenta, movimiento)
-- [ ] Listar reglas de negocio implementadas con referencia a spec
-- [ ] Trazar flujo completo de POST /api/v1/clientes nombrando cada clase
+- [x] Dibujar diagrama ASCII de interacción entre servicios y bases de datos
+- [x] Describir las tres capas de la arquitectura hexagonal con ejemplos de clases reales
+- [x] Escribir sección de decisiones de diseño (mínimo 3 decisiones justificadas)
+- [x] Describir modelo de datos de cliente-service (tablas persona, cliente)
+- [x] Describir modelo de datos de cuenta-service (tablas cuenta, movimiento)
+- [x] Listar reglas de negocio implementadas con referencia a spec
+- [x] Trazar flujo completo de POST /api/v1/clientes nombrando cada clase
 
 ### cliente-service/README.md
-- [ ] Revisar todos los endpoints expuestos y construir la tabla
-- [ ] Escribir tabla de variables de entorno del servicio
-- [ ] Escribir comandos de arranque y empaquetado probados localmente
-- [ ] Escribir árbol de paquetes de src/main/java con descripción por paquete
+- [x] Revisar todos los endpoints expuestos y construir la tabla
+- [x] Escribir tabla de variables de entorno del servicio
+- [x] Escribir comandos de arranque y empaquetado probados localmente
+- [x] Escribir árbol de paquetes de src/main/java con descripción por paquete
 
 ### cuenta-service/README.md
-- [ ] Revisar todos los endpoints expuestos y construir la tabla
-- [ ] Escribir tabla de variables de entorno del servicio
-- [ ] Escribir comandos de arranque y empaquetado probados localmente
-- [ ] Escribir árbol de paquetes de src/main/java con descripción por paquete
+- [x] Revisar todos los endpoints expuestos y construir la tabla
+- [x] Escribir tabla de variables de entorno del servicio
+- [x] Escribir comandos de arranque y empaquetado probados localmente
+- [x] Escribir árbol de paquetes de src/main/java con descripción por paquete
