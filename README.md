@@ -77,7 +77,10 @@ mvn clean verify -DskipTests=false
 ```
 
 ## CI/CD
-El proyecto cuenta con un pipeline de GitHub Actions que ejecuta `mvn verify` en cada Pull Request y Push a la rama `main`, garantizando que ningún cambio rompa la compilación o reduzca la cobertura de tests por debajo del 80%.
+El proyecto utiliza pipelines independientes para garantizar que cada microservicio sea validado de forma aislada ante cualquier cambio.
+
+- **Cliente Service:** ![CI — cliente-service](https://github.com/tutoOmar/bankary-backend/actions/workflows/cliente-service.yml/badge.svg)
+- **Cuenta Service:** ![CI — cuenta-service](https://github.com/tutoOmar/bankary-backend/actions/workflows/cuenta-service.yml/badge.svg)
 
 ## Documentación Adicional
 - [ARCHITECTURE.md](ARCHITECTURE.md): Decisiones de diseño y flujo técnico.

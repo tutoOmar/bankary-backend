@@ -1,0 +1,61 @@
+name: CI — cuenta-service
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'cuenta-service/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'cuenta-service/**'
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: cuentadb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build, tests y cobertura
+        working-directory: cuenta-service
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/cuentadb
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          SERVER_PORT: 8081
+          APP_NAME: cuenta-service
+          CLIENTE_SERVICE_URL: http://localhost:8080
+        run: mvn verify --no-transfer-progress
+
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-cuenta-service
+          path: cuenta-service/target/site/jacoco/
+          retention-days: 7
